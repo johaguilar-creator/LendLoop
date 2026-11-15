@@ -16,7 +16,7 @@ provided export; implementation status is independent.
 | LL-INT-01 | Set up repository and initial project structure | Ian Karl S. Esmabe | Done | BLOCKED | `feature/LL-INT-01-initial-project-structure` | `1caabe5`; local React/Vite and Express/Mongoose workspace; GitHub push requires repository write access. |
 | LL-BE-01 | Design initial MongoDB database schemas | Jan Africa | For Approval | TESTED | `feature/LL-BE-01-database-schemas` | `7715165`; `pnpm --filter @lendloop/backend test` (4 passed). |
 | LL-BE-02 | Implement authentication and ADNU email validation | Jan Africa | For Approval | NOT STARTED | `feature/LL-BE-02-authentication` | — |
-| LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-03-api-routing` | — |
+| LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-03-api-routing` | `f0a2e4a`; API health/404 envelope tests (6 backend tests passed). |
 | LL-BE-04 | Implement item management and search APIs | Jan Africa | To Do | NOT STARTED | `feature/LL-BE-04-item-management` | — |
 | LL-BE-05 | Implement borrowing request APIs | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-05-borrowing-requests` | — |
 | LL-BE-06 | Enforce borrowing limits | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-06-borrowing-limits` | Limit of five is provisional from the Figma reference. |
