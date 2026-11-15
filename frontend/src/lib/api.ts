@@ -47,6 +47,12 @@ export type LendingItem = {
   createdAt: string
 }
 
+export type ReportTarget = {
+  targetType: 'item' | 'user' | 'loan'
+  targetId: string
+  label: string
+}
+
 type SuccessEnvelope<T> = { success: true; data: T }
 type ErrorEnvelope = { success: false; error: ApiErrorBody }
 

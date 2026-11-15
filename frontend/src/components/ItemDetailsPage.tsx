@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ApiError, api, type LendingItem } from '../lib/api'
+import { ApiError, api, type LendingItem, type ReportTarget } from '../lib/api'
 
 type ItemDetailsPageProps = {
   itemId: string
@@ -7,6 +7,7 @@ type ItemDetailsPageProps = {
   activeBorrowingCount: number
   onBack: () => void
   onViewLoans: () => void
+  onReportTarget: (target: ReportTarget) => void
 }
 
 function localDate(offsetDays: number) {
@@ -24,6 +25,7 @@ export default function ItemDetailsPage({
   activeBorrowingCount,
   onBack,
   onViewLoans,
+  onReportTarget,
 }: ItemDetailsPageProps) {
   const [item, setItem] = useState<LendingItem | null>(null)
   const [loading, setLoading] = useState(true)
@@ -168,6 +170,28 @@ export default function ItemDetailsPage({
                 </button>
               </form>
             )}
+            <div className="detail-report-actions">
+              <button
+                onClick={() => onReportTarget({
+                  targetType: 'item',
+                  targetId: item._id,
+                  label: item.title,
+                })}
+              >
+                Report listing
+              </button>
+              {item.owner._id !== userId && (
+                <button
+                  onClick={() => onReportTarget({
+                    targetType: 'user',
+                    targetId: item.owner._id,
+                    label: item.owner.name,
+                  })}
+                >
+                  Report owner
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

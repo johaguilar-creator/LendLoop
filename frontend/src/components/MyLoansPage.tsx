@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ApiError, api, type LendingItem, type Student } from '../lib/api'
+import { ApiError, api, type LendingItem, type ReportTarget, type Student } from '../lib/api'
 
 type Person = {
   _id: string
@@ -32,6 +32,7 @@ type Loan = {
 type MyLoansPageProps = {
   user: Student
   onUserUpdated: (user: Student) => void
+  onReportLoan: (target: ReportTarget) => void
 }
 
 type Tab = 'borrowing' | 'requests' | 'lending'
@@ -64,7 +65,7 @@ function ItemThumb({ item }: { item: BorrowingRequest['item'] }) {
     : <div className="loan-thumb loan-thumb-placeholder" aria-hidden="true">LL</div>
 }
 
-export default function MyLoansPage({ user, onUserUpdated }: MyLoansPageProps) {
+export default function MyLoansPage({ user, onUserUpdated, onReportLoan }: MyLoansPageProps) {
   const [requests, setRequests] = useState<BorrowingRequest[]>([])
   const [loans, setLoans] = useState<Loan[]>([])
   const [tab, setTab] = useState<Tab>('borrowing')
@@ -224,6 +225,11 @@ export default function MyLoansPage({ user, onUserUpdated }: MyLoansPageProps) {
                 key={loan._id}
                 loan={loan}
                 viewerIsBorrower
+                onReport={() => onReportLoan({
+                  targetType: 'loan',
+                  targetId: loan._id,
+                  label: loan.item?.title ?? 'Borrowing activity',
+                })}
                 onAction={() => void performAction(
                   loan._id,
                   () => api.post(`/loans/${loan._id}/return`),
@@ -296,6 +302,11 @@ export default function MyLoansPage({ user, onUserUpdated }: MyLoansPageProps) {
               key={loan._id}
               loan={loan}
               viewerIsBorrower={false}
+              onReport={() => onReportLoan({
+                targetType: 'loan',
+                targetId: loan._id,
+                label: loan.item?.title ?? 'Borrowing activity',
+              })}
               onAction={() => void performAction(
                 loan._id,
                 () => api.patch(`/loans/${loan._id}/return`),
@@ -314,11 +325,13 @@ function LoanCard({
   viewerIsBorrower,
   busy,
   onAction,
+  onReport,
 }: {
   loan: Loan
   viewerIsBorrower: boolean
   busy: boolean
   onAction: () => void
+  onReport: () => void
 }) {
   const canRequestReturn = viewerIsBorrower && loan.status === 'active'
   const canConfirmReturn = !viewerIsBorrower && loan.status === 'return_requested'
@@ -344,6 +357,7 @@ function LoanCard({
           {busy ? 'Please wait…' : canRequestReturn ? 'Request return' : 'Confirm return'}
         </button>
       )}
+      <button className="loan-report-link" onClick={onReport}>Report concern</button>
     </article>
   )
 }
