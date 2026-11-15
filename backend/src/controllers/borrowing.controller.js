@@ -12,6 +12,7 @@ import { ApiError } from '../middleware/ApiError.js'
 import { sendSuccess } from '../utils/response.js'
 import { assertBorrowingCapacity } from '../utils/borrowingLimit.js'
 import { recordReturnCreditEvent } from '../services/reputation.service.js'
+import { recordReturnRewardEvent } from '../services/reward.service.js'
 
 const requestPopulation = [
   { path: 'item', select: 'title category condition imageUrl available' },
@@ -260,6 +261,7 @@ export async function confirmLoanReturn(request, response) {
       item.available = !item.archivedAt
       await item.save({ session })
       await recordReturnCreditEvent(returnedLoan, session)
+      await recordReturnRewardEvent(returnedLoan, session)
       await BorrowRequest.updateOne(
         { loan: returnedLoan.id, status: 'approved' },
         { $set: { status: 'returned' } },
