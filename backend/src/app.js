@@ -9,6 +9,7 @@ import itemRouter from './routes/item.routes.js'
 import { borrowRequests, loans } from './routes/borrowing.routes.js'
 import conversationRouter from './routes/conversation.routes.js'
 import notificationRouter from './routes/notification.routes.js'
+import reputationRouter from './routes/reputation.routes.js'
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use('/api/borrow-requests', borrowRequests)
 app.use('/api/loans', loans)
 app.use('/api/conversations', conversationRouter)
 app.use('/api/notifications', notificationRouter)
+app.use('/api/reputation', reputationRouter)
 app.use(notFoundHandler)
 app.use(errorHandler)
 

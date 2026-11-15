@@ -11,6 +11,7 @@ import {
 import { ApiError } from '../middleware/ApiError.js'
 import { sendSuccess } from '../utils/response.js'
 import { assertBorrowingCapacity } from '../utils/borrowingLimit.js'
+import { recordReturnCreditEvent } from '../services/reputation.service.js'
 
 const requestPopulation = [
   { path: 'item', select: 'title category condition imageUrl available' },
@@ -258,6 +259,7 @@ export async function confirmLoanReturn(request, response) {
       if (!item) throw new ApiError(404, 'ITEM_NOT_FOUND', 'Loan item not found.')
       item.available = !item.archivedAt
       await item.save({ session })
+      await recordReturnCreditEvent(returnedLoan, session)
       await BorrowRequest.updateOne(
         { loan: returnedLoan.id, status: 'approved' },
         { $set: { status: 'returned' } },
