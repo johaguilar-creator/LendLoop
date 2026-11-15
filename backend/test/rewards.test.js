@@ -33,3 +33,13 @@ test('reward balance is protected and cannot be written by a student', async () 
     assert.equal(body.error.code, 'UNAUTHENTICATED')
   })
 })
+
+test('reward history requires an authenticated student', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/rewards/me/events`)
+    const body = await response.json()
+
+    assert.equal(response.status, 401)
+    assert.equal(body.error.code, 'UNAUTHENTICATED')
+  })
+})
