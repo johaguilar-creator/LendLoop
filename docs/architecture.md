@@ -51,7 +51,8 @@ client-supplied user ID.
   values. The implementation uses centralized, documented provisional rules:
   a 100-point starting score, +2 for an on-time return, -10 for a late return,
   and 50 reward points for an on-time return. These remain subject to group
-  approval and are not represented as an approved institutional policy.
+  approval and are not represented as an approved institutional policy. The
+  reputation API labels the rules provisional.
 - No upload provider or OSA system integration is specified. Listings accept an
   image URL; OSA referral is represented as an internal report status only.
 - Local MongoDB deployments must support transactions for approval/return

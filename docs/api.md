@@ -45,6 +45,11 @@ operation.
 | Reputation | `GET /reputation/me`, `GET /reputation/me/events` |
 | Reports | `POST /reports`, `GET /admin/reports`, `PATCH /admin/reports/:reportId` |
 
+`GET /reputation/me` returns the authenticated student's current score,
+standing, and reward total. `GET /reputation/me/events` returns that student's
+score event history. Scores are updated by the API when a loan is confirmed
+returned; there is no client write endpoint.
+
 Query pagination uses `page` (1-based) and `limit` (bounded to 100). Item
 search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
 The public item list includes available, non-archived listings only. Owners use
