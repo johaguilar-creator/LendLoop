@@ -198,6 +198,17 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .message-input button { border:0;width:38px;height:38px;border-radius:8px;background:var(--color-green);color:#fff;display:grid;place-items:center; }
 .notification { background:#fff;border:1px solid var(--color-line);border-radius:12px;padding:16px;margin-bottom:9px;position:relative; }
 .notification.unread:before { content:'';position:absolute;left:-3px;top:22px;width:6px;height:6px;background:var(--color-green);border-radius:50%; }
+.notification-filters { display:flex;gap:18px;border-bottom:1px solid var(--color-line);margin:-8px 0 16px; }
+.notification-filters button { border:0;border-bottom:2px solid transparent;background:transparent;padding:10px 0;color:var(--color-muted);font-size:11px;font-weight:700; }
+.notification-filters button.active { color:var(--color-green);border-bottom-color:var(--color-green); }
+.notification-list { display:grid;gap:9px; }.notification-list .notification { margin:0;align-items:flex-start; }
+.notification-mark { width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:10px;background:var(--color-mint);color:var(--color-green);font:800 13px var(--font-display); }
+.notification-mark.read { background:#f0f2f1;color:#78837f; }
+.notification-copy { flex:1;min-width:0; }.notification-heading { display:flex;flex-wrap:wrap;align-items:center;gap:8px; }.notification-heading strong { font-size:11px; }.notification-heading>span { color:var(--color-muted);font-size:8px;text-transform:uppercase;letter-spacing:.06em; }
+.notification-copy p { margin:5px 0;color:var(--color-muted);font-size:10px;line-height:1.55; }.notification-copy time { color:#929e9a;font-size:9px; }
+.mark-read { flex:none;border:0;background:transparent;color:var(--color-green);font-size:9px;font-weight:700;padding:8px; }.mark-read:disabled { opacity:.6; }
+.unread-summary { color:var(--color-green);font-size:10px;font-weight:700;white-space:nowrap; }.notification-error { margin-bottom:12px; }
+.load-more { display:block;margin:18px auto 0; }
 .profile-grid,.report-grid { display:grid;grid-template-columns:.8fr 1.4fr;gap:20px; }
 .profile-card,.reputation,.form-card,.osa-card { background:#fff;border:1px solid var(--color-line);border-radius:15px;padding:26px; }
 .profile-card { text-align:center; }

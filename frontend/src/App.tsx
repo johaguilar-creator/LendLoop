@@ -7,6 +7,7 @@ import ItemDetailsPage from './components/ItemDetailsPage'
 import ListingForm from './components/ListingForm'
 import MyLoansPage from './components/MyLoansPage'
 import MyListingsPage from './components/MyListingsPage'
+import NotificationsPage from './components/NotificationsPage'
 import ProfilePage from './components/ProfilePage'
 import { ApiError, api, type LendingItem, type Student } from './lib/api'
 
@@ -111,6 +112,7 @@ function Dashboard({
   const [selectedItem, setSelectedItem] = useState<LendingItem | null>(null)
   const [discoverQuery, setDiscoverQuery] = useState('')
   const [listingRefresh, setListingRefresh] = useState(0)
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [mobile, setMobile] = useState(false)
   const nav: { page: Page; icon: string }[] = [
     { page: 'Home', icon: 'home' }, { page: 'Discover', icon: 'search' }, { page: 'My loans', icon: 'loans' },
@@ -126,7 +128,7 @@ function Dashboard({
       <nav>
         <div className="nav-label">MENU</div>
         {nav.slice(0, 7).map(n => <button key={n.page} className={page === n.page ? 'nav-item active' : 'nav-item'} onClick={() => go(n.page)}>
-          <Icon name={n.icon}/><span>{n.page}</span>{n.page === 'Notifications' && <b>3</b>}
+          <Icon name={n.icon}/><span>{n.page}</span>{n.page === 'Notifications' && unreadNotifications > 0 && <b>{unreadNotifications}</b>}
         </button>)}
         <div className="nav-label support">SUPPORT</div>
         <button className={page === 'Reports' ? 'nav-item active' : 'nav-item'} onClick={() => go('Reports')}><Icon name="flag"/><span>Reports & OSA</span></button>
@@ -141,7 +143,7 @@ function Dashboard({
         <button className="menu-btn" onClick={() => setMobile(!mobile)}><Icon name="menu"/></button>
         <div className="mobile-brand">LendLoop</div>
         <div className="header-actions">
-          <button className="icon-btn" onClick={() => go('Notifications')}><Icon name="bell"/><i /></button>
+          <button aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} unread` : ''}`} className="icon-btn" onClick={() => go('Notifications')}><Icon name="bell"/>{unreadNotifications > 0 && <i />}</button>
           <Button onClick={() => go('Create listing')}><Icon name="plus" size={17}/> List an item</Button>
         </div>
       </header>
@@ -200,9 +202,9 @@ function Dashboard({
 
       {page === 'Messages' && <ChatPage userId={user.id} />}
 
-      {page === 'Notifications' && <div className="content narrow"><PageTitle title="Notifications" text="Updates about your loans and account."/>
-        {['Your request was approved|Miguel approved “Scientific Calculator”.|12 min ago','Upcoming return date|Your calculator is due tomorrow at 5:00 PM.|1 hr ago','You earned 50 Loop Points|On-time returns build your score and unlock badges.|Yesterday'].map((n,i)=>{const a=n.split('|');return <div className={`notification ${i===0?'unread':''}`} key={n}><div className={`activity-icon ${i===1?'orange':''}`}><Icon name={i===1?'bell':'check'}/></div><div><strong>{a[0]}</strong><p>{a[1]}</p></div><time>{a[2]}</time></div>})}
-      </div>}
+      {page === 'Notifications' && (
+        <NotificationsPage onUnreadCount={setUnreadNotifications} />
+      )}
 
       {page === 'Profile' && <div className="content"><ProfilePage user={user} onUserUpdated={onUserUpdated} /></div>}
 
