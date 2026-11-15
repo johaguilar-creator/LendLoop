@@ -1,11 +1,17 @@
 # LendLoop implementation progress
 
-Baseline commit: `903cb41` (`chore: initialize LendLoop project repository`).
-The local structure correction is on
-`feature/LL-INT-01-initial-project-structure` (`1caabe5`). The baseline push to
-`origin/main` is blocked: GitHub returned HTTP 403 for authenticated account
-`GabrielRamores05`, which lacks write permission to
-`johaguilar-creator/LendLoop`. No feature branches have been pushed.
+Baseline commit in the original local history: `903cb41`
+(`chore: initialize LendLoop project repository`). The local structure
+correction is on `feature/LL-INT-01-initial-project-structure` (`1caabe5`).
+
+The GitHub repository was published on 2026-11-16 after authenticating as
+`johaguilar-creator`. Its `main` remains at the original baseline, and all
+ticket branches are present as unmerged refs. To keep the Trello export and
+Figma source out of public history, branches were pushed from an isolated copy
+with `References/` removed from every reachable commit. The original local
+history was not rewritten; consequently, GitHub commit hashes differ from the
+local hashes recorded in this tracker. Continue work from the sanitized GitHub
+branches rather than pushing the original local refs.
 
 Statuses below reflect the local workspace. “Trello status” is from the
 provided export; implementation status is independent.
@@ -39,7 +45,7 @@ provided export; implementation status is independent.
 | LL-INT-04 | Integrate chat and messaging functionality | Trello text: Ian Karl S. Esmabe, Justin Mangubat, Erice Matthew Isaiah Cama | To Do | BLOCKED | `feature/LL-INT-04-chat-integration` | FE-06 conversation, message, pagination, and read-state calls match the backend routes and response shapes; chat contract tests (4 passed), frontend type check/build passed. Two-account exchange and cross-participant access integration require a MongoDB replica set. Export member IDs also assign John Clarence H. Aguilar; discrepancy retained per task prompt. |
 | LL-INT-05 | Integrate notifications, credit scores, and rewards | Ian Karl S. Esmabe, John Clarence H. Aguilar, Justin Mangubat, Jan Africa, Erice Matthew Isaiah Cama | To Do | BLOCKED | `feature/LL-INT-05-notifications-credit-rewards` | FE-07/08 calls and response fields match authenticated notification, reputation, and reward APIs; 9 focused backend tests and frontend type check/build passed. Per-student persisted data and loan-triggered updates still need MongoDB integration testing. |
 | LL-INT-06 | Integrate reporting and OSA referral functionality | Ian Karl S. Esmabe, John Clarence H. Aguilar, Erice Matthew Isaiah Cama | To Do | BLOCKED | `feature/LL-INT-06-reporting-osa-integration` | FE-09 submits the backend report contract and handles server validation/errors and confirmation; report API tests (4 passed) cover validation/auth/admin authorization, frontend type check/build passed. Persisted submission/reviewer retrieval requires MongoDB integration; OSA referral remains an internal status, not a live OSA connection. |
-| LL-INT-07 | Perform system-wide testing and bug fixing | Ian Karl S. Esmabe, Jan Africa, Erice Matthew Isaiah Cama, John Clarence H. Aguilar, Justin Mangubat | To Do | NOT STARTED | `feature/LL-INT-07-system-testing` | — |
+| LL-INT-07 | Perform system-wide testing and bug fixing | Ian Karl S. Esmabe, Jan Africa, Erice Matthew Isaiah Cama, John Clarence H. Aguilar, Justin Mangubat | To Do | BLOCKED | `feature/LL-INT-07-system-testing` | Removed fabricated home activity and now show recent backend notifications with loading/empty/error states; audited remaining frontend mock strings and API routes. Backend suite: 43 passed; frontend type check/build passed. Full critical-flow and regression verification is blocked by missing MongoDB replica-set configuration. |
 
 ## Technical decisions and blockers
 

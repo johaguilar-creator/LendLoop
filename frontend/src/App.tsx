@@ -14,12 +14,6 @@ import { ApiError, api, type LendingItem, type ReportTarget, type Student } from
 
 type Page = 'Home' | 'Discover' | 'My loans' | 'My listings' | 'Messages' | 'Notifications' | 'Profile' | 'Reports' | 'Create listing'
 
-const photos = [
-  'https://images.unsplash.com/photo-1646911996830-187b66019a2d?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1607102291356-76abe1f5fdae?auto=format&fit=crop&w=900&q=80',
-  'https://images.unsplash.com/photo-1515940279136-2f419eea8051?auto=format&fit=crop&w=900&q=80',
-]
-
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, ReactNode> = {
     home: <><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></>,
@@ -164,11 +158,10 @@ function Dashboard({
         </section>
         <section className="section-head"><div><h2>Recently listed</h2><p>Fresh finds from the ADNU community</p></div><button onClick={() => go('Discover')}>Browse all <Icon name="arrow" size={16}/></button></section>
         <ItemBrowser compact onOpen={openItem} />
-        <div className="activity">
-          <div className="section-head compact"><div><h2>Recent activity</h2></div><button onClick={() => go('Notifications')}>View all</button></div>
-          <div className="activity-row"><div className="activity-icon"><Icon name="check"/></div><div><strong>Your request was approved</strong><p>Miguel approved your request for “Scientific Calculator”.</p></div><time>12 min ago</time></div>
-          <div className="activity-row"><div className="activity-icon blue"><Icon name="chat"/></div><div><strong>New message from Bea</strong><p>“Sure! I can meet you at the library...”</p></div><time>1 hr ago</time></div>
-        </div>
+        <RecentActivity
+          onUnreadCount={setUnreadNotifications}
+          onViewAll={() => go('Notifications')}
+        />
       </div>}
 
       {page === 'Discover' && !selectedItem && <div className="content"><PageTitle title="Discover items" text="Find what you need from the ADNU community." />
@@ -232,4 +225,97 @@ function Dashboard({
 
 function PageTitle({title, text}:{title:string;text:string}) {
   return <div className="page-title"><div><div className="kicker">LENDLOOP</div><h1>{title}</h1><p>{text}</p></div></div>
+}
+
+type ActivityNotification = {
+  _id: string
+  type: string
+  title: string
+  message: string
+  createdAt: string
+}
+
+function RecentActivity({
+  onUnreadCount,
+  onViewAll,
+}: {
+  onUnreadCount: (count: number) => void
+  onViewAll: () => void
+}) {
+  const [notifications, setNotifications] = useState<ActivityNotification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    void api
+      .get<{ notifications: ActivityNotification[]; unreadCount: number }>(
+        '/notifications?page=1&limit=3',
+      )
+      .then((result) => {
+        if (active) {
+          setNotifications(result.notifications)
+          onUnreadCount(result.unreadCount)
+        }
+      })
+      .catch((requestError: unknown) => {
+        if (active) {
+          setError(
+            requestError instanceof ApiError
+              ? requestError.message
+              : 'Unable to load recent activity.',
+          )
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [onUnreadCount])
+
+  return (
+    <section className="activity">
+      <div className="section-head compact">
+        <div><h2>Recent activity</h2></div>
+        <button onClick={onViewAll}>View all</button>
+      </div>
+      {loading && <div className="items-state" role="status">Loading recent activity…</div>}
+      {!loading && error && <div className="items-state items-error" role="alert">{error}</div>}
+      {!loading && !error && notifications.length === 0 && (
+        <p className="empty-note">Your recent LendLoop activity will appear here.</p>
+      )}
+      {!loading && !error && notifications.map((notification) => {
+        const isMessage = notification.type === 'message'
+        const icon = isMessage
+          ? 'chat'
+          : notification.type === 'request_approved' || notification.type === 'loan_returned'
+            ? 'check'
+            : 'bell'
+        const date = new Date(notification.createdAt)
+
+        return (
+          <div className="activity-row" key={notification._id}>
+            <div className={`activity-icon ${isMessage ? 'blue' : ''}`}>
+              <Icon name={icon} />
+            </div>
+            <div>
+              <strong>{notification.title}</strong>
+              <p>{notification.message}</p>
+            </div>
+            <time dateTime={notification.createdAt}>
+              {date.toLocaleString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              })}
+            </time>
+          </div>
+        )
+      })}
+    </section>
+  )
 }
