@@ -23,8 +23,9 @@ pnpm workspace with a React/Vite frontend and an Express/Mongoose backend.
    pnpm install
    ```
 
-2. Create `backend/.env` from `backend/.env.example` and set `MONGODB_URI` to
-   your MongoDB connection string.
+2. Create `backend/.env` from `backend/.env.example`; set `MONGODB_URI` to your
+   MongoDB connection string and replace `JWT_SECRET` with a random value of at
+   least 32 characters.
 
 3. Start both applications:
 
