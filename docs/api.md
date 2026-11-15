@@ -28,6 +28,9 @@ Authentication uses an HTTP-only cookie and credentialed CORS from the
 configured frontend origin. The client must use `credentials: "include"`.
 Protected requests return `401 UNAUTHENTICATED` when the cookie is missing or
 invalid. Authorization is enforced by backend ownership and role checks.
+New registrations are always students; administrator roles are granted only
+through the allowlisted `pnpm --filter @lendloop/backend admin:promote -- <email>`
+operation.
 
 ## Endpoint groups
 
