@@ -43,12 +43,16 @@ operation.
 | Messaging | `GET /conversations`, `GET /conversations/:conversationId/messages`, `POST /conversations/:conversationId/messages`, `PATCH /conversations/:conversationId/read` |
 | Notifications | `GET /notifications`, `PATCH /notifications/:notificationId/read` |
 | Reputation | `GET /reputation/me`, `GET /reputation/me/events` |
+| Rewards | `GET /rewards/me`, `GET /rewards/me/events` |
 | Reports | `POST /reports`, `GET /admin/reports`, `PATCH /admin/reports/:reportId` |
 
 `GET /reputation/me` returns the authenticated student's current score,
 standing, and reward total. `GET /reputation/me/events` returns that student's
 score event history. Scores are updated by the API when a loan is confirmed
 returned; there is no client write endpoint.
+`GET /rewards/me` and `/rewards/me/events` return the authenticated student's
+points balance and ledger. Points are awarded only for the documented
+provisional on-time return event and are not client-editable.
 
 Query pagination uses `page` (1-based) and `limit` (bounded to 100). Item
 search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
