@@ -5,13 +5,15 @@ Baseline commit in the original local history: `903cb41`
 correction is on `feature/LL-INT-01-initial-project-structure` (`1caabe5`).
 
 The GitHub repository was published on 2026-11-16 after authenticating as
-`johaguilar-creator`. Its `main` remains at the original baseline, and all
-ticket branches are present as unmerged refs. To keep the Trello export and
-Figma source out of public history, branches were pushed from an isolated copy
-with `References/` removed from every reachable commit. The original local
-history was not rewritten; consequently, GitHub commit hashes differ from the
-local hashes recorded in this tracker. Continue work from the sanitized GitHub
-branches rather than pushing the original local refs.
+`johaguilar-creator`. All 27 ticket branches were then merged individually into
+`main` using merge commits; see PRs #1-#27. The order follows the dependency and
+branch history: INT-01, BE-01, BE-03, BE-02, BE-04 through BE-11, FE-01 through
+FE-09, then INT-02 through INT-07. To keep the Trello export and Figma source
+out of public history, branches were pushed from an isolated copy with
+`References/` removed from every reachable commit. The original local history
+was not rewritten; consequently, GitHub commit hashes differ from the local
+hashes recorded in this tracker. Continue work from the sanitized GitHub
+history rather than pushing the original local refs.
 
 Statuses below reflect the local workspace. “Trello status” is from the
 provided export; implementation status is independent.
@@ -19,7 +21,7 @@ provided export; implementation status is independent.
 | Trello ID | Exact task title | Assigned member(s) | Trello status | Implementation status | Branch | Commit / tests / remaining |
 |---|---|---|---|---|---|---|
 | LL-UI-01 | Design LendLoop system mock screens in Figma | Ian Karl S. Esmabe | Done | IMPLEMENTED | Existing Figma source | Audited; reference project retained locally. |
-| LL-INT-01 | Set up repository and initial project structure | Ian Karl S. Esmabe | Done | BLOCKED | `feature/LL-INT-01-initial-project-structure` | `1caabe5`; local React/Vite and Express/Mongoose workspace; GitHub push requires repository write access. |
+| LL-INT-01 | Set up repository and initial project structure | Ian Karl S. Esmabe | Done | IMPLEMENTED | `feature/LL-INT-01-initial-project-structure` | `1caabe5`; React/Vite and Express/Mongoose workspace; merged to `main` in PR #1. |
 | LL-BE-01 | Design initial MongoDB database schemas | Jan Africa | For Approval | TESTED | `feature/LL-BE-01-database-schemas` | `7715165`; `pnpm --filter @lendloop/backend test` (4 passed). |
 | LL-BE-02 | Implement authentication and ADNU email validation | Jan Africa | For Approval | TESTED | `feature/LL-BE-02-authentication` | `e6f5d94`; `pnpm --filter @lendloop/backend test` (9 passed); full DB-backed registration/login awaits MongoDB. |
 | LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-03-api-routing` | `f0a2e4a`; API health/404 envelope tests (6 backend tests passed). |
@@ -49,13 +51,12 @@ provided export; implementation status is independent.
 
 ## Technical decisions and blockers
 
-- Ticket branches remain local and unmerged. Branches with dependencies are
-  based on their prerequisite ticket branch; no feature branch is merged into
-  `main` or another permanent ticket branch.
+- All 27 ticket branches were merged into `main` in order through PRs #1-#27;
+  the remote feature branch refs were retained for traceability.
 - The project uses a pnpm workspace; the frontend is React/Vite and the API is
   Express/Mongoose.
-- GitHub write access is the current external blocker. Do not copy credentials
-  into chat or source files.
+- The original local branch history differs from the sanitized GitHub history.
+  Continue from a fresh clone of GitHub; do not push the original local refs.
 - Score/reward values are provisional until group approval. The API keeps those
   rules centralized so approved values can be changed without client trust.
 - Test coverage and test results will be recorded on each ticket as it is
