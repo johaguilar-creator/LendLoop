@@ -52,8 +52,9 @@ The public item list includes available, non-archived listings only. Owners use
 authenticated and ownership-checked.
 
 Borrow requests transition from `pending` to `approved`, `rejected`, or
-`cancelled`. Approval reserves the item and creates an active loan in a MongoDB
-transaction. The borrower marks an active loan ready to return with
+`cancelled`, then to `returned` after the related loan is returned. Approval
+reserves the item and creates an active loan in a MongoDB transaction. The
+borrower marks an active loan ready to return with
 `POST /loans/:loanId/return`; the owner confirms the return with
 `PATCH /loans/:loanId/return`. The confirmed loan and related request are
 updated together.
