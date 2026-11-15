@@ -54,6 +54,11 @@ returned; there is no client write endpoint.
 points balance and ledger. Points are awarded only for the documented
 provisional on-time return event and are not client-editable.
 
+`GET /users/me` returns the signed-in student's profile. `PATCH /users/me`
+accepts one or more of `name`, `bio`, and `avatarUrl`; email, student ID, role,
+and reputation values are not editable through this endpoint. Avatar URLs must
+use HTTPS.
+
 Query pagination uses `page` (1-based) and `limit` (bounded to 100). Item
 search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
 The public item list includes available, non-archived listings only. Owners use

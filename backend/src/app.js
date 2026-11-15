@@ -12,6 +12,7 @@ import notificationRouter from './routes/notification.routes.js'
 import reputationRouter from './routes/reputation.routes.js'
 import rewardRouter from './routes/reward.routes.js'
 import { adminReports, reports } from './routes/report.routes.js'
+import userRouter from './routes/user.routes.js'
 
 const app = express()
 
@@ -26,6 +27,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/users', userRouter)
 app.use('/api/items', itemRouter)
 app.use('/api/borrow-requests', borrowRequests)
 app.use('/api/loans', loans)
