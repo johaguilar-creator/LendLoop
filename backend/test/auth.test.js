@@ -33,6 +33,25 @@ test('registration rejects non-ADNU email addresses before persistence', async (
   })
 })
 
+test('auth API allows credentialed browser requests from the frontend origin', async () => {
+  await withServer(async (baseUrl) => {
+    const frontendOrigin = process.env.FRONTEND_URL || 'http://localhost:8443'
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'OPTIONS',
+      headers: {
+        origin: frontendOrigin,
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type',
+      },
+    })
+
+    assert.equal(response.status, 204)
+    assert.equal(response.headers.get('access-control-allow-origin'), frontendOrigin)
+    assert.equal(response.headers.get('access-control-allow-credentials'), 'true')
+    assert.match(response.headers.get('access-control-allow-methods') || '', /POST/)
+  })
+})
+
 test('protected auth endpoints reject requests without a session cookie', async () => {
   await withServer(async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/auth/me`)
