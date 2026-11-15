@@ -38,7 +38,7 @@ operation.
 |---|---|
 | Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me` |
 | Profile | `GET /users/me`, `PATCH /users/me` |
-| Items | `GET /items`, `GET /items/:itemId`, `POST /items`, `PATCH /items/:itemId`, `DELETE /items/:itemId` |
+| Items | `GET /items`, `GET /items/mine`, `GET /items/:itemId`, `POST /items`, `PATCH /items/:itemId`, `DELETE /items/:itemId` |
 | Borrowing | `POST /borrow-requests`, `GET /borrow-requests`, `PATCH /borrow-requests/:requestId/decision`, `GET /loans`, `POST /loans/:loanId/return` |
 | Messaging | `GET /conversations`, `GET /conversations/:conversationId/messages`, `POST /conversations/:conversationId/messages` |
 | Notifications | `GET /notifications`, `PATCH /notifications/:notificationId/read` |
@@ -46,4 +46,7 @@ operation.
 | Reports | `POST /reports`, `GET /admin/reports`, `PATCH /admin/reports/:reportId` |
 
 Query pagination uses `page` (1-based) and `limit` (bounded to 100). Item
-search uses `q`, `category`, `available`, and `sort` query parameters.
+search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
+The public item list includes available, non-archived listings only. Owners use
+`GET /items/mine` to retrieve their own unavailable listings; item writes are
+authenticated and ownership-checked.

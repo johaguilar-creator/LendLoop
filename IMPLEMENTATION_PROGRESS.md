@@ -17,7 +17,7 @@ provided export; implementation status is independent.
 | LL-BE-01 | Design initial MongoDB database schemas | Jan Africa | For Approval | TESTED | `feature/LL-BE-01-database-schemas` | `7715165`; `pnpm --filter @lendloop/backend test` (4 passed). |
 | LL-BE-02 | Implement authentication and ADNU email validation | Jan Africa | For Approval | TESTED | `feature/LL-BE-02-authentication` | `e6f5d94`; `pnpm --filter @lendloop/backend test` (9 passed); full DB-backed registration/login awaits MongoDB. |
 | LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-03-api-routing` | `f0a2e4a`; API health/404 envelope tests (6 backend tests passed). |
-| LL-BE-04 | Implement item management and search APIs | Jan Africa | To Do | NOT STARTED | `feature/LL-BE-04-item-management` | — |
+| LL-BE-04 | Implement item management and search APIs | Jan Africa | To Do | TESTED | `feature/LL-BE-04-item-management` | `81089e6`; item validation/auth/ID tests; backend suite (12 passed). Mongo-backed listing CRUD still requires configured MongoDB. |
 | LL-BE-05 | Implement borrowing request APIs | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-05-borrowing-requests` | — |
 | LL-BE-06 | Enforce borrowing limits | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-06-borrowing-limits` | Limit of five is provisional from the Figma reference. |
 | LL-BE-07 | Implement chat and messaging APIs | Erice Matthew Isaiah Cama | Doing | NOT STARTED | `feature/LL-BE-07-chat-messaging` | — |
