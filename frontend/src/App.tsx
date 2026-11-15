@@ -9,7 +9,8 @@ import MyLoansPage from './components/MyLoansPage'
 import MyListingsPage from './components/MyListingsPage'
 import NotificationsPage from './components/NotificationsPage'
 import ProfilePage from './components/ProfilePage'
-import { ApiError, api, type LendingItem, type Student } from './lib/api'
+import ReportPage from './components/ReportPage'
+import { ApiError, api, type LendingItem, type ReportTarget, type Student } from './lib/api'
 
 type Page = 'Home' | 'Discover' | 'My loans' | 'My listings' | 'Messages' | 'Notifications' | 'Profile' | 'Reports' | 'Create listing'
 
@@ -113,14 +114,16 @@ function Dashboard({
   const [discoverQuery, setDiscoverQuery] = useState('')
   const [listingRefresh, setListingRefresh] = useState(0)
   const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null)
   const [mobile, setMobile] = useState(false)
   const nav: { page: Page; icon: string }[] = [
     { page: 'Home', icon: 'home' }, { page: 'Discover', icon: 'search' }, { page: 'My loans', icon: 'loans' },
     { page: 'My listings', icon: 'loans' },
     { page: 'Messages', icon: 'chat' }, { page: 'Notifications', icon: 'bell' }, { page: 'Profile', icon: 'user' }, { page: 'Reports', icon: 'flag' }
   ]
-  const go = (p: Page) => { setPage(p); setSelectedItem(null); setMobile(false) }
+  const go = (p: Page) => { setPage(p); setSelectedItem(null); if (p !== 'Reports') setReportTarget(null); setMobile(false) }
   const openItem = (item: LendingItem) => { setSelectedItem(item); setPage('Discover') }
+  const openReport = (target: ReportTarget) => { setReportTarget(target); setPage('Reports'); setSelectedItem(null); setMobile(false) }
 
   return <div className="app-shell">
     <aside className={mobile ? 'sidebar open' : 'sidebar'}>
@@ -177,6 +180,7 @@ function Dashboard({
           activeBorrowingCount={user.activeBorrowingCount}
           itemId={selectedItem._id}
           onBack={() => setSelectedItem(null)}
+          onReportTarget={openReport}
           onViewLoans={() => go('My loans')}
           userId={user.id}
         />
@@ -198,7 +202,13 @@ function Dashboard({
         />
       )}
 
-      {page === 'My loans' && <MyLoansPage user={user} onUserUpdated={onUserUpdated} />}
+      {page === 'My loans' && (
+        <MyLoansPage
+          onReportLoan={openReport}
+          onUserUpdated={onUserUpdated}
+          user={user}
+        />
+      )}
 
       {page === 'Messages' && <ChatPage userId={user.id} />}
 
@@ -208,10 +218,13 @@ function Dashboard({
 
       {page === 'Profile' && <div className="content"><ProfilePage user={user} onUserUpdated={onUserUpdated} /></div>}
 
-      {page === 'Reports' && <div className="content"><PageTitle title="Reports & OSA referrals" text="Raise a concern safely. Serious cases can be referred to the Office of Student Affairs."/>
-        <div className="report-grid"><section className="form-card"><h2>Submit a report</h2><label>Report category</label><select defaultValue=""><option value="" disabled>Select a category</option><option>Item not returned</option><option>Damaged item</option><option>Inappropriate behavior</option></select><label>Related transaction</label><select><option>Scientific Calculator — #LL-1024</option></select><label>Tell us what happened</label><textarea placeholder="Share relevant details..."/><Button>Submit report</Button></section>
-        <section className="osa-card"><span className="pill active-pill">ADMIN VIEW</span><h2>OSA referral queue</h2><p>Only designated staff can access referral details.</p><div className="report-row"><div><strong>#RPT-024 · Item not returned</strong><p>Canon EOS 80D · 3 days overdue</p></div><span className="pill pending">UNDER REVIEW</span></div><div className="report-row"><div><strong>#RPT-019 · Damaged item</strong><p>Laboratory coat · Referred Feb 18</p></div><span className="pill">REFERRED TO OSA</span></div></section></div>
-      </div>}
+      {page === 'Reports' && (
+        <ReportPage
+          onBrowseItems={() => go('Discover')}
+          onViewLoans={() => go('My loans')}
+          target={reportTarget}
+        />
+      )}
     </main>
 
   </div>

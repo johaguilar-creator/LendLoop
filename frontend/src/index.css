@@ -209,8 +209,8 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .mark-read { flex:none;border:0;background:transparent;color:var(--color-green);font-size:9px;font-weight:700;padding:8px; }.mark-read:disabled { opacity:.6; }
 .unread-summary { color:var(--color-green);font-size:10px;font-weight:700;white-space:nowrap; }.notification-error { margin-bottom:12px; }
 .load-more { display:block;margin:18px auto 0; }
-.profile-grid,.report-grid { display:grid;grid-template-columns:.8fr 1.4fr;gap:20px; }
-.profile-card,.reputation,.form-card,.osa-card { background:#fff;border:1px solid var(--color-line);border-radius:15px;padding:26px; }
+.profile-grid { display:grid;grid-template-columns:.8fr 1.4fr;gap:20px; }
+.profile-card,.reputation,.form-card { background:#fff;border:1px solid var(--color-line);border-radius:15px;padding:26px; }
 .profile-card { text-align:center; }
 .big-avatar { width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:var(--color-mint);color:var(--color-green);font:800 22px var(--font-display);margin:0 auto 14px; }
 .profile-card h2 { margin-bottom:4px; }.profile-card>p { color:var(--color-muted);font-size:11px; }
@@ -233,8 +233,29 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .badge-row { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
 .badge-row>div { border:1px solid var(--color-line);border-radius:11px;padding:14px;display:flex;gap:8px;align-items:center;color:var(--color-green);font-weight:800; }
 .badge-row span { color:var(--color-ink);font-size:11px;line-height:1.3; }.badge-row small { color:var(--color-muted);font-weight:400; }
-.form-card h2,.osa-card h2 { margin-bottom:20px; }
+.form-card h2 { margin-bottom:20px; }
 .form-card label { margin-top:15px; }.form-card textarea { min-height:100px;resize:vertical;margin-bottom:16px; }
+.report-entry-card,.report-confirmation { background:#fff;border:1px solid var(--color-line);border-radius:15px;padding:26px; }
+.report-entry-card h2,.report-confirmation h2 { margin:0 0 8px; }
+.report-entry-card p,.report-confirmation p { color:var(--color-muted);font-size:11px;line-height:1.6; }
+.report-entry-actions { display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 14px; }
+.report-entry-card>small,.report-confirmation>small { color:var(--color-muted);font-size:10px;line-height:1.6; }
+.report-form { display:grid;gap:18px; }
+.report-form label { margin:0 0 7px; }
+.report-form select,.report-form textarea { width:100%;border:1px solid var(--color-line);border-radius:9px;padding:11px 12px;background:#fff;outline-color:var(--color-green);font:inherit;font-size:12px; }
+.report-form textarea { min-height:140px;margin:0;resize:vertical; }
+.report-form>button { justify-self:start; }
+.report-target { display:grid;gap:6px;padding:13px 15px;border-radius:10px;background:#f3f7fd; }
+.report-target small { color:var(--color-muted);font-size:9px;font-weight:700;letter-spacing:.07em; }
+.report-target strong { font-size:12px;overflow-wrap:anywhere; }
+.field-hint { display:block;margin-top:6px;color:var(--color-muted);font-size:9px; }
+.report-privacy-note { margin:0;color:var(--color-muted);font-size:10px;line-height:1.55; }
+.report-confirmation { text-align:center;padding:36px 26px; }
+.report-confirmation .success-icon { font-size:22px; }
+.detail-report-actions { display:flex;flex-wrap:wrap;gap:10px;margin-top:14px; }
+.detail-report-actions button,.loan-report-link { min-height:36px;padding:0 12px;border:1px solid var(--color-line);border-radius:8px;background:#fff;color:var(--color-green);font-size:10px;font-weight:700; }
+.detail-report-actions button:hover,.loan-report-link:hover { border-color:var(--color-green);background:#f3f7fd; }
+.loan-report-link { flex:none; }
 .detail-image-placeholder { display:grid;place-items:center;background:linear-gradient(140deg,#e7f2ef,#d8e6fa);color:#527a70;font:700 14px var(--font-display); }
 .listing-page-title { display:flex;align-items:center;justify-content:space-between;gap:15px; }
 .listing-form-grid { display:grid;grid-template-columns:minmax(0,1.3fr) minmax(250px,.7fr);gap:20px;align-items:start; }
@@ -249,9 +270,6 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .my-listing-info h2 { margin:9px 0 3px;font-size:14px; }.my-listing-info p { margin:0;color:var(--color-muted);font-size:10px; }
 .my-listing-actions { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px; }.my-listing-actions button { min-height:36px;padding:0 12px;font-size:10px; }
 .archive-listing { border:0;background:transparent;color:#a33b32;font-size:10px;font-weight:700;padding:8px; }.listing-action-error { margin-bottom:16px; }
-.osa-card>p { color:var(--color-muted);font-size:11px;margin-top:-12px; }
-.report-row { border-top:1px solid var(--color-line);padding:16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px; }
-.report-row strong { font-size:11px; }.report-row p { margin:4px 0 0;color:var(--color-muted);font-size:9px; }
 .modal-backdrop { position:fixed;inset:0;background:rgba(10,28,58,.55);z-index:50;display:grid;place-items:center;padding:20px;backdrop-filter:blur(3px); }
 .success-modal { background:#fff;border-radius:18px;max-width:410px;width:100%;padding:34px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.2); }
 .success-icon { width:56px;height:56px;background:var(--color-mint);color:var(--color-green);border-radius:50%;display:grid;place-items:center;margin:0 auto 16px; }
@@ -271,7 +289,7 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 @media (max-width: 680px) {
   .content { padding:30px 18px 55px; }.header-actions .icon-btn { display:none; }.header-actions .btn-primary { padding:0 12px; }
   .welcome { align-items:flex-start;flex-direction:column; }.trust-card { width:100%; }
-  h1 { font-size:27px; }.stats-grid,.items-grid,.profile-grid,.report-grid { grid-template-columns:1fr; }.due-card { grid-column:auto; }
+  h1 { font-size:27px; }.stats-grid,.items-grid,.profile-grid { grid-template-columns:1fr; }.due-card { grid-column:auto; }
   .items-grid { gap:13px; }.image-wrap { height:220px; }
   .detail-grid { grid-template-columns:1fr; }.detail-image { height:320px; }.detail-info h1 { font-size:30px; }
   .loan-card { align-items:flex-start;flex-wrap:wrap; }.loan-card>div:nth-child(2) { min-width:calc(100% - 110px); }.loan-date { margin-left:107px; }
