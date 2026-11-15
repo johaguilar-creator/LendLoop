@@ -3,11 +3,13 @@ import {
   BorrowRequest,
   Item,
   Loan,
+  MAX_ACTIVE_BORROWINGS,
   Notification,
   User,
 } from '../models/index.js'
 import { ApiError } from '../middleware/ApiError.js'
 import { sendSuccess } from '../utils/response.js'
+import { assertBorrowingCapacity } from '../utils/borrowingLimit.js'
 
 const requestPopulation = [
   { path: 'item', select: 'title category condition imageUrl available' },
@@ -46,6 +48,7 @@ export async function createBorrowRequest(request, response) {
   if (item.owner.equals(request.user.id)) {
     throw new ApiError(400, 'CANNOT_BORROW_OWN_ITEM', 'You cannot request your own item.')
   }
+  assertBorrowingCapacity(request.user.activeBorrowingCount)
 
   const existingRequest = await BorrowRequest.exists({
     item: item.id,
@@ -121,6 +124,25 @@ export async function decideBorrowRequest(request, response) {
         return
       }
 
+      const borrower = await User.findOneAndUpdate(
+        {
+          _id: decidedRequest.borrower,
+          activeBorrowingCount: { $lt: MAX_ACTIVE_BORROWINGS },
+        },
+        { $inc: { activeBorrowingCount: 1 } },
+        { new: true, session },
+      )
+      if (!borrower) {
+        const existingBorrower = await User.findById(decidedRequest.borrower)
+          .session(session)
+          .select('activeBorrowingCount')
+        if (!existingBorrower) {
+          throw new ApiError(404, 'BORROWER_NOT_FOUND', 'Borrower account not found.')
+        }
+        assertBorrowingCapacity(existingBorrower.activeBorrowingCount)
+        throw new ApiError(409, 'BORROWING_LIMIT_REACHED', 'Borrowing limit was reached.')
+      }
+
       const reservedItem = await Item.findOneAndUpdate(
         { _id: item.id, available: true },
         { $set: { available: false } },
@@ -146,11 +168,6 @@ export async function decideBorrowRequest(request, response) {
       decidedRequest.status = 'approved'
       decidedRequest.loan = loan.id
       await decidedRequest.save({ session })
-      await User.updateOne(
-        { _id: decidedRequest.borrower },
-        { $inc: { activeBorrowingCount: 1 } },
-        { session },
-      )
       await Notification.create(
         [
           {
@@ -236,11 +253,21 @@ export async function confirmLoanReturn(request, response) {
         { $set: { status: 'returned' } },
         { session },
       )
-      await User.updateOne(
-        { _id: returnedLoan.borrower },
+      const borrower = await User.findOneAndUpdate(
+        {
+          _id: returnedLoan.borrower,
+          activeBorrowingCount: { $gt: 0 },
+        },
         { $inc: { activeBorrowingCount: -1 } },
-        { session },
+        { new: true, session },
       )
+      if (!borrower) {
+        throw new ApiError(
+          500,
+          'BORROWING_COUNT_INCONSISTENT',
+          'Borrowing count is inconsistent; the return was not finalized.',
+        )
+      }
       await Notification.create(
         [
           {

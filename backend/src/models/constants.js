@@ -29,3 +29,5 @@ export const REPORT_CATEGORIES = [
   'borrowing_concern',
   'other',
 ]
+
+export const MAX_ACTIVE_BORROWINGS = 5
