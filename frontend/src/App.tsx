@@ -4,6 +4,7 @@ import AuthScreen from './components/AuthScreen'
 import ItemBrowser from './components/ItemBrowser'
 import ItemDetailsPage from './components/ItemDetailsPage'
 import ListingForm from './components/ListingForm'
+import MyLoansPage from './components/MyLoansPage'
 import MyListingsPage from './components/MyListingsPage'
 import ProfilePage from './components/ProfilePage'
 import { ApiError, api, type LendingItem, type Student } from './lib/api'
@@ -147,13 +148,13 @@ function Dashboard({
       {page === 'Home' && <div className="content">
         <section className="welcome">
           <div><div className="kicker">ATENEO DE NAGA UNIVERSITY</div><h1>Good morning, {user.name.split(' ')[0]}.</h1><p>What do you need today? Borrow from students you know and trust.</p></div>
-          <div className="trust-card"><div className="score-ring">86</div><div><span>Great standing</span><strong>Your LoopScore</strong><small>Top 15% of borrowers</small></div><Icon name="arrow"/></div>
+          <div className="trust-card"><div className="score-ring">{user.creditScore}</div><div><span>Current score</span><strong>Your LoopScore</strong><small>Based on confirmed loan activity</small></div><Icon name="arrow"/></div>
         </section>
         <form className="search-box" onSubmit={(event) => {event.preventDefault();go('Discover')}}><Icon name="search" size={22}/><input aria-label="Search items" onChange={(event) => setDiscoverQuery(event.target.value)} placeholder="Search cameras, calculators, books, and more..." value={discoverQuery} /><button className="btn-primary">Search</button></form>
         <section className="stats-grid">
-          <div className="stat-card"><div className="stat-icon green"><Icon name="loans"/></div><div><small>BORROWING LIMIT</small><strong>2 <span>of 5 items</span></strong><div className="progress"><i style={{width:'40%'}} /></div></div></div>
-          <div className="stat-card"><div className="stat-icon orange">★</div><div><small>LOOP POINTS</small><strong>1,240 <span>points</span></strong><p>60 pts until your next badge</p></div></div>
-          <div className="due-card"><div><small>NEXT DUE</small><strong>Scientific Calculator</strong><p>Tomorrow · 5:00 PM</p></div><span>1 day</span></div>
+          <div className="stat-card"><div className="stat-icon green"><Icon name="loans"/></div><div><small>ACTIVE BORROWINGS</small><strong>{user.activeBorrowingCount} <span>of 5 items</span></strong><div className="progress"><i style={{width:`${Math.min(user.activeBorrowingCount / 5, 1) * 100}%`}} /></div></div></div>
+          <div className="stat-card"><div className="stat-icon orange">★</div><div><small>LOOP POINTS</small><strong>{user.rewardPoints.toLocaleString()} <span>points</span></strong><p>Earn points for eligible on-time returns.</p></div></div>
+          <div className="due-card"><div><small>LOANS & RETURNS</small><strong>Manage your borrowing activity</strong><p>Review requests, loan dates, and returns.</p></div><button onClick={() => go('My loans')}>View loans</button></div>
         </section>
         <section className="section-head"><div><h2>Recently listed</h2><p>Fresh finds from the ADNU community</p></div><button onClick={() => go('Discover')}>Browse all <Icon name="arrow" size={16}/></button></section>
         <ItemBrowser compact onOpen={openItem} />
@@ -168,7 +169,15 @@ function Dashboard({
         <ItemBrowser initialQuery={discoverQuery} onOpen={openItem} />
       </div>}
 
-      {page === 'Discover' && selectedItem && <ItemDetailsPage itemId={selectedItem._id} onBack={() => setSelectedItem(null)} />}
+      {page === 'Discover' && selectedItem && (
+        <ItemDetailsPage
+          activeBorrowingCount={user.activeBorrowingCount}
+          itemId={selectedItem._id}
+          onBack={() => setSelectedItem(null)}
+          onViewLoans={() => go('My loans')}
+          userId={user.id}
+        />
+      )}
 
       {page === 'My listings' && (
         <MyListingsPage
@@ -186,11 +195,7 @@ function Dashboard({
         />
       )}
 
-      {page === 'My loans' && <div className="content"><PageTitle title="My loans" text="Track requests, active loans, and lending activity." />
-        <div className="tabs"><button className="active">Borrowing <span>2</span></button><button>Lending <span>1</span></button></div>
-        <div className="loan-card"><img src={photos[0]}/><div><span className="pill active-pill">ACTIVE LOAN</span><h3>Scientific Calculator</h3><p>Borrowed from Miguel Santos</p></div><div className="loan-date"><small>RETURN BY</small><strong>Tomorrow, 5:00 PM</strong><span>Due in 1 day</span></div><Button>Confirm return</Button></div>
-        <div className="loan-card"><img src={photos[2]}/><div><span className="pill pending">PENDING</span><h3>Fujifilm X-T20</h3><p>Requested from Paolo Reyes</p></div><div className="loan-date"><small>REQUESTED</small><strong>Today, 9:42 AM</strong><span>Awaiting response</span></div><Button secondary>Cancel request</Button></div>
-      </div>}
+      {page === 'My loans' && <MyLoansPage user={user} onUserUpdated={onUserUpdated} />}
 
       {page === 'Messages' && <div className="content"><PageTitle title="Messages" text="Keep borrowing details in one safe place."/><div className="messages">
         <div className="threads"><div className="thread active"><div className="avatar">BM</div><div><strong>Bea Mendoza</strong><p>Sure! I can meet you...</p></div><time>10:34</time></div><div className="thread"><div className="avatar gray">MS</div><div><strong>Miguel Santos</strong><p>Thanks for returning it!</p></div></div></div>

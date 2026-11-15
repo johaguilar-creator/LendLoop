@@ -81,7 +81,8 @@ h2 { font-size:20px;letter-spacing:-.02em; }
 .due-card small { color:#9fc7ba; }
 .due-card strong { font-size:14px;margin-top:5px; }
 .due-card p { color:#c4dcd4; }
-.due-card>span { background:rgba(255,255,255,.12);padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700; }
+.due-card>span,.due-card>button { border:0;background:rgba(255,255,255,.12);padding:7px 10px;border-radius:8px;color:#fff;font-size:11px;font-weight:700;white-space:nowrap; }
+.due-card>button { cursor:pointer; }.due-card>button:hover { background:rgba(255,255,255,.2); }
 .section-head { display:flex;justify-content:space-between;align-items:end;margin-bottom:17px; }
 .section-head h2 { margin:0 0 3px; }
 .section-head p { margin:0;color:var(--color-muted);font-size:12px; }
@@ -161,6 +162,13 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .loan-date { min-width:175px;display:flex;flex-direction:column; }
 .loan-date strong { font-size:11px;margin:3px 0; }
 .loan-date span { color:#c86a43;font-size:9px; }
+.loan-section { margin:24px 0 34px; }.loan-section>h2 { margin:0 0 14px; }
+.loan-tabs { overflow:auto; }.loan-tabs button { white-space:nowrap; }
+.loan-card-main { flex:1;min-width:120px; }.loan-card-main h3 { margin:8px 0 3px; }.loan-card-main p { margin:0;color:var(--color-muted);font-size:10px; }
+.loan-thumb { width:90px;height:72px;flex:none;object-fit:cover;border-radius:9px; }.loan-thumb-placeholder { display:grid;place-items:center;background:#e8f0ed;color:var(--color-green);font-weight:800; }
+.request-message { margin-top:7px!important;font-style:italic; }.request-actions { display:flex;gap:8px; }.request-actions button { min-height:36px;padding:0 12px;font-size:10px; }
+.loan-action { min-height:38px;padding:0 13px;font-size:10px;white-space:nowrap; }.empty-note { color:var(--color-muted);font-size:11px;padding:14px 0; }.loan-feedback { margin-bottom:12px; }
+.borrow-request-form { display:grid;gap:9px; }.borrow-request-form label { margin:3px 0 0; }.borrow-request-form .field-hint { margin-top:-4px; }.borrow-request-form textarea { resize:vertical;min-height:72px; }.request-followup { margin-top:12px; }
 .messages { display:grid;grid-template-columns:280px 1fr;background:#fff;border:1px solid var(--color-line);border-radius:15px;overflow:hidden;min-height:520px; }
 .threads { border-right:1px solid var(--color-line);padding:12px; }
 .thread { display:flex;align-items:center;gap:9px;padding:12px;border-radius:10px; }
@@ -246,6 +254,7 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
   .items-grid { gap:13px; }.image-wrap { height:220px; }
   .detail-grid { grid-template-columns:1fr; }.detail-image { height:320px; }.detail-info h1 { font-size:30px; }
   .loan-card { align-items:flex-start;flex-wrap:wrap; }.loan-card>div:nth-child(2) { min-width:calc(100% - 110px); }.loan-date { margin-left:107px; }
+  .request-card .loan-date { margin-left:0; }.request-actions { width:100%;justify-content:flex-end; }.loan-action { margin-left:106px; }
   .messages { grid-template-columns:1fr; }.threads { display:none; }
   .badge-row { grid-template-columns:1fr; }.bubble { max-width:82%; }
   .my-listing { grid-template-columns:80px minmax(0,1fr); }.my-listing>img,.my-listing-placeholder { width:80px;height:74px; }

@@ -1,16 +1,39 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { ApiError, api, type LendingItem } from '../lib/api'
 
 type ItemDetailsPageProps = {
   itemId: string
+  userId: string
+  activeBorrowingCount: number
   onBack: () => void
+  onViewLoans: () => void
 }
 
-export default function ItemDetailsPage({ itemId, onBack }: ItemDetailsPageProps) {
+function localDate(offsetDays: number) {
+  const date = new Date()
+  date.setDate(date.getDate() + offsetDays)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export default function ItemDetailsPage({
+  itemId,
+  userId,
+  activeBorrowingCount,
+  onBack,
+  onViewLoans,
+}: ItemDetailsPageProps) {
   const [item, setItem] = useState<LendingItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [retry, setRetry] = useState(0)
+  const [returnDate, setReturnDate] = useState(() => localDate(3))
+  const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [requestError, setRequestError] = useState('')
+  const [requestSent, setRequestSent] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -38,6 +61,36 @@ export default function ItemDetailsPage({ itemId, onBack }: ItemDetailsPageProps
       active = false
     }
   }, [itemId, retry])
+
+  async function submitRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSubmitting(true)
+    setRequestError('')
+    const proposedReturnDate = new Date(`${returnDate}T17:00:00`)
+
+    if (Number.isNaN(proposedReturnDate.getTime()) || proposedReturnDate.getTime() <= Date.now()) {
+      setRequestError('Choose a return date in the future.')
+      setSubmitting(false)
+      return
+    }
+
+    try {
+      await api.post('/borrow-requests', {
+        itemId,
+        proposedReturnDate: proposedReturnDate.toISOString(),
+        message: message.trim(),
+      })
+      setRequestSent(true)
+    } catch (requestError) {
+      setRequestError(
+        requestError instanceof ApiError
+          ? requestError.message
+          : 'Unable to send your request. Check your connection and try again.',
+      )
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="content detail-page">
@@ -79,12 +132,42 @@ export default function ItemDetailsPage({ itemId, onBack }: ItemDetailsPageProps
                 <p>LoopScore {item.owner.creditScore}</p>
               </div>
             </div>
-            <div className="request-box">
-              <div className="limit-note">
-                <span>Borrowing requests will be available when the loan workflow is connected.</span>
+            {item.owner._id === userId ? (
+              <div className="request-box"><p className="empty-note">You own this listing.</p></div>
+            ) : activeBorrowingCount >= 5 ? (
+              <div className="request-box"><p className="form-error">You have reached the limit of five active loans. Return an item before requesting another.</p></div>
+            ) : requestSent ? (
+              <div className="request-box">
+                <p className="form-success" role="status">Your request was sent to {item.owner.name}.</p>
+                <button className="btn-primary full request-followup" onClick={onViewLoans}>View my loans</button>
               </div>
-              <button className="btn-primary full" disabled>Request to borrow</button>
-            </div>
+            ) : (
+              <form className="request-box borrow-request-form" onSubmit={submitRequest}>
+                <label htmlFor="proposed-return-date">Proposed return date</label>
+                <input
+                  id="proposed-return-date"
+                  min={localDate(1)}
+                  onChange={(event) => setReturnDate(event.target.value)}
+                  required
+                  type="date"
+                  value={returnDate}
+                />
+                <small className="field-hint">The owner can review your proposed date.</small>
+                <label htmlFor="borrow-message">Message to the owner (optional)</label>
+                <textarea
+                  id="borrow-message"
+                  maxLength={1000}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Share when you need the item or ask a question."
+                  rows={3}
+                  value={message}
+                />
+                {requestError && <div className="form-error" role="alert">{requestError}</div>}
+                <button className="btn-primary full" disabled={submitting}>
+                  {submitting ? 'Sending request…' : 'Request to borrow'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
