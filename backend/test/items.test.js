@@ -25,14 +25,14 @@ test('item search rejects invalid filters and bounds pagination', async () => {
     assert.equal(response.status, 400)
     assert.equal(body.error.code, 'VALIDATION_ERROR')
   })
+})
 
-  test('item search accepts availability filters and defaults to available listings', () => {
-    const parse = (query) => itemSearchSchema.safeParse({ body: {}, params: {}, query })
-    assert.equal(parse({ availability: 'unavailable' }).success, true)
-    assert.equal(parse({ availability: 'all' }).success, true)
-    assert.equal(parse({ availability: 'pending' }).success, false)
-    assert.equal(parse({}).data.query.availability, 'available')
-  })
+test('item search accepts availability filters and defaults to available listings', () => {
+  const parse = (query) => itemSearchSchema.safeParse({ body: {}, params: {}, query })
+  assert.equal(parse({ availability: 'unavailable' }).success, true)
+  assert.equal(parse({ availability: 'all' }).success, true)
+  assert.equal(parse({ availability: 'pending' }).success, false)
+  assert.equal(parse({}).data.query.availability, 'available')
 })
 
 test('item details reject malformed identifiers before querying MongoDB', async () => {
@@ -61,5 +61,37 @@ test('item creation requires an authenticated user', async () => {
 
     assert.equal(response.status, 401)
     assert.equal(body.error.code, 'UNAUTHENTICATED')
+  })
+})
+
+test('owner listing management requires an authenticated user', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/items/mine`)
+    const body = await response.json()
+
+    assert.equal(response.status, 401)
+    assert.equal(body.error.code, 'UNAUTHENTICATED')
+  })
+})
+
+test('listing edits and archives require an authenticated session', async () => {
+  await withServer(async (baseUrl) => {
+    const itemId = '507f1f77bcf86cd799439011'
+    for (const [method, options] of [
+      ['PATCH', {
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: 'Updated calculator' }),
+      }],
+      ['DELETE', {}],
+    ]) {
+      const response = await fetch(`${baseUrl}/api/items/${itemId}`, {
+        method,
+        ...options,
+      })
+      const body = await response.json()
+
+      assert.equal(response.status, 401)
+      assert.equal(body.error.code, 'UNAUTHENTICATED')
+    }
   })
 })

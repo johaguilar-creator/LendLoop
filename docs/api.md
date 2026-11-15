@@ -65,6 +65,10 @@ search uses `q`, `category`, `availability` (`available`, `unavailable`, or
 Archived listings are never included. `GET /items/mine` returns the
 authenticated owner's non-archived listings, including unavailable ones; item
 writes are authenticated and ownership-checked.
+`POST /items` creates a listing; `PATCH /items/:itemId` edits an owned listing
+or its availability; `DELETE /items/:itemId` archives it. Listing photos are
+optional HTTPS URLs (no file-upload service is configured). The public detail
+endpoint returns available listings only.
 
 Borrow requests transition from `pending` to `approved`, `rejected`, or
 `cancelled`, then to `returned` after the related loan is returned. Approval
