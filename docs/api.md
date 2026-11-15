@@ -63,3 +63,8 @@ borrower both when requests are submitted and when owners approve them.
 Approval creates a private conversation for the loan. Conversation and message
 reads and writes require participant membership; `PATCH
 /conversations/:conversationId/read` marks incoming messages as read.
+
+Notifications are always scoped to the authenticated recipient. `GET
+/notifications?unreadOnly=true` filters unread entries; `PATCH
+/notifications/:notificationId/read` marks one of that recipient's entries as
+read. Borrowing and messaging workflows create notifications server-side.
