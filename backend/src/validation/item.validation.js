@@ -27,6 +27,7 @@ export const itemSearchSchema = z.object({
   query: z.object({
     q: z.string().trim().max(100).optional(),
     category: z.enum(ITEM_CATEGORIES).optional(),
+    availability: z.enum(['available', 'unavailable', 'all']).default('available'),
     sort: z.enum(['newest', 'oldest', 'title']).default('newest'),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(12),

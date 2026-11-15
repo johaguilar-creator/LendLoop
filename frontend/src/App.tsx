@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from 'react'
 import { useCallback, useEffect } from 'react'
 import AuthScreen from './components/AuthScreen'
+import ItemBrowser from './components/ItemBrowser'
 import ProfilePage from './components/ProfilePage'
-import { ApiError, api, type Student } from './lib/api'
+import { ApiError, api, type LendingItem, type Student } from './lib/api'
 
 type Page = 'Home' | 'Discover' | 'My loans' | 'Messages' | 'Notifications' | 'Profile' | 'Reports'
 
@@ -32,24 +33,6 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
 
 function Button({ children, secondary, onClick, className = '' }: { children: ReactNode; secondary?: boolean; onClick?: () => void; className?: string }) {
   return <button onClick={onClick} className={`${secondary ? 'btn-secondary' : 'btn-primary'} ${className}`}>{children}</button>
-}
-
-const items = [
-  { name: 'MacBook Air M1', owner: 'Miguel Santos', meta: 'Electronics · 3 days', image: photos[0], tag: 'Available now' },
-  { name: 'Sony WH-1000XM4', owner: 'Bea Mendoza', meta: 'Electronics · 2 days', image: photos[1], tag: 'Available tomorrow' },
-  { name: 'Fujifilm X-T20', owner: 'Paolo Reyes', meta: 'Photography · 4 days', image: photos[2], tag: 'Available now' },
-]
-
-function ItemCard({ item, onOpen }: { item: typeof items[number]; onOpen: () => void }) {
-  return <article className="item-card">
-    <div className="image-wrap"><img src={item.image} alt={item.name} /><span className="availability"><i />{item.tag}</span></div>
-    <div className="item-body">
-      <div className="eyebrow">{item.meta}</div>
-      <div className="item-title">{item.name}</div>
-      <div className="owner"><span>{item.owner.split(' ').map(x => x[0]).join('')}</span><div><strong>{item.owner}</strong><small>Verified student</small></div></div>
-      <button className="view-link" onClick={onOpen}>View item <Icon name="arrow" size={16}/></button>
-    </div>
-  </article>
 }
 
 export default function App() {
@@ -121,13 +104,15 @@ function Dashboard({
 }) {
   const [page, setPage] = useState<Page>('Home')
   const [detail, setDetail] = useState(false)
-  const [requested, setRequested] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<LendingItem | null>(null)
+  const [discoverQuery, setDiscoverQuery] = useState('')
   const [mobile, setMobile] = useState(false)
   const nav: { page: Page; icon: string }[] = [
     { page: 'Home', icon: 'home' }, { page: 'Discover', icon: 'search' }, { page: 'My loans', icon: 'loans' },
     { page: 'Messages', icon: 'chat' }, { page: 'Notifications', icon: 'bell' }, { page: 'Profile', icon: 'user' }, { page: 'Reports', icon: 'flag' }
   ]
-  const go = (p: Page) => { setPage(p); setDetail(false); setMobile(false) }
+  const go = (p: Page) => { setPage(p); setDetail(false); setSelectedItem(null); setMobile(false) }
+  const openItem = (item: LendingItem) => { setSelectedItem(item); setDetail(true); setPage('Discover') }
 
   return <div className="app-shell">
     <aside className={mobile ? 'sidebar open' : 'sidebar'}>
@@ -160,14 +145,14 @@ function Dashboard({
           <div><div className="kicker">ATENEO DE NAGA UNIVERSITY</div><h1>Good morning, {user.name.split(' ')[0]}.</h1><p>What do you need today? Borrow from students you know and trust.</p></div>
           <div className="trust-card"><div className="score-ring">86</div><div><span>Great standing</span><strong>Your LoopScore</strong><small>Top 15% of borrowers</small></div><Icon name="arrow"/></div>
         </section>
-        <div className="search-box"><Icon name="search" size={22}/><input placeholder="Search cameras, calculators, books, and more..." /><Button onClick={() => go('Discover')}>Search</Button></div>
+        <form className="search-box" onSubmit={(event) => {event.preventDefault();go('Discover')}}><Icon name="search" size={22}/><input aria-label="Search items" onChange={(event) => setDiscoverQuery(event.target.value)} placeholder="Search cameras, calculators, books, and more..." value={discoverQuery} /><button className="btn-primary">Search</button></form>
         <section className="stats-grid">
           <div className="stat-card"><div className="stat-icon green"><Icon name="loans"/></div><div><small>BORROWING LIMIT</small><strong>2 <span>of 5 items</span></strong><div className="progress"><i style={{width:'40%'}} /></div></div></div>
           <div className="stat-card"><div className="stat-icon orange">★</div><div><small>LOOP POINTS</small><strong>1,240 <span>points</span></strong><p>60 pts until your next badge</p></div></div>
           <div className="due-card"><div><small>NEXT DUE</small><strong>Scientific Calculator</strong><p>Tomorrow · 5:00 PM</p></div><span>1 day</span></div>
         </section>
         <section className="section-head"><div><h2>Recently listed</h2><p>Fresh finds from the ADNU community</p></div><button onClick={() => go('Discover')}>Browse all <Icon name="arrow" size={16}/></button></section>
-        <div className="items-grid">{items.map(item => <ItemCard item={item} key={item.name} onOpen={() => {setDetail(true); setPage('Discover')}} />)}</div>
+        <ItemBrowser compact onOpen={openItem} />
         <div className="activity">
           <div className="section-head compact"><div><h2>Recent activity</h2></div><button onClick={() => go('Notifications')}>View all</button></div>
           <div className="activity-row"><div className="activity-icon"><Icon name="check"/></div><div><strong>Your request was approved</strong><p>Miguel approved your request for “Scientific Calculator”.</p></div><time>12 min ago</time></div>
@@ -176,20 +161,17 @@ function Dashboard({
       </div>}
 
       {page === 'Discover' && !detail && <div className="content"><PageTitle title="Discover items" text="Find what you need from the ADNU community." />
-        <div className="search-box"><Icon name="search"/><input placeholder="Search all items..." /><Button>Search</Button></div>
-        <div className="filters"><button className="selected">All items</button><button>Electronics</button><button>Books</button><button>School supplies</button><button>Photography</button></div>
-        <div className="results-line"><strong>42 items available</strong><span>Sorted by: Newest</span></div>
-        <div className="items-grid">{items.concat(items.slice(0,2)).map((item, i) => <ItemCard item={item} key={item.name+i} onOpen={() => setDetail(true)} />)}</div>
+        <ItemBrowser initialQuery={discoverQuery} onOpen={openItem} />
       </div>}
 
-      {detail && <div className="content detail-page">
-        <button className="back" onClick={() => setDetail(false)}>← Back to discover</button>
+      {detail && selectedItem && <div className="content detail-page">
+        <button className="back" onClick={() => {setDetail(false);setSelectedItem(null)}}>← Back to discover</button>
         <div className="detail-grid">
-          <img className="detail-image" src={photos[0]} alt="MacBook Air M1"/>
-          <div className="detail-info"><div className="availability inline"><i/>Available now</div><div className="eyebrow">ELECTRONICS</div><h1>MacBook Air M1</h1><p className="description">A reliable MacBook Air in excellent condition. Perfect for presentations, coding sessions, or finishing a paper on campus.</p>
-            <div className="lender"><div className="avatar">MS</div><div><small>LENT BY</small><strong>Miguel Santos <span>✓</span></strong><p>LoopScore 92 · 18 successful lends</p></div></div>
-            <div className="request-box"><label>Proposed return date</label><input type="date" defaultValue="2026-02-27"/><div className="limit-note"><Icon name="loans"/><span>This will use <strong>1 of your 3 remaining</strong> borrowing slots.</span></div>
-              <Button className="full" onClick={() => setRequested(true)}>Request to borrow</Button>
+          <img className="detail-image" src={selectedItem.imageUrl || photos[0]} alt={selectedItem.title}/>
+          <div className="detail-info"><div className="availability inline"><i/>{selectedItem.available ? 'Available now' : 'Currently unavailable'}</div><div className="eyebrow">{selectedItem.category.replace(/_/g, ' ')} · {selectedItem.condition.replace(/_/g, ' ')}</div><h1>{selectedItem.title}</h1><p className="description">{selectedItem.description}</p>
+            <div className="lender"><div className="avatar">{selectedItem.owner.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}</div><div><small>LENT BY</small><strong>{selectedItem.owner.name}</strong><p>LoopScore {selectedItem.owner.creditScore}</p></div></div>
+            <div className="request-box"><div className="limit-note"><Icon name="loans"/><span>Borrowing requests will be available when the loan workflow is connected.</span></div>
+              <button className="btn-primary full" disabled>Request to borrow</button>
             </div>
           </div>
         </div>
@@ -218,7 +200,6 @@ function Dashboard({
       </div>}
     </main>
 
-    {requested && <div className="modal-backdrop"><div className="success-modal"><div className="success-icon"><Icon name="check" size={28}/></div><h2>Request sent</h2><p>Miguel has been notified. You’ll get an update as soon as they respond.</p><div className="modal-actions"><Button secondary onClick={() => setRequested(false)}>Keep browsing</Button><Button onClick={() => {setRequested(false);setDetail(false);setPage('My loans')}}>View my loans</Button></div></div></div>}
   </div>
 }
 
