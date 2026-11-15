@@ -77,3 +77,8 @@ Notifications are always scoped to the authenticated recipient. `GET
 /notifications?unreadOnly=true` filters unread entries; `PATCH
 /notifications/:notificationId/read` marks one of that recipient's entries as
 read. Borrowing and messaging workflows create notifications server-side.
+
+Students submit reports with `POST /reports`; their identity is taken from the
+session. Reports are private. Only an administrator can use `/admin/reports`
+to review or update status. `referred_to_osa` is an internal prototype status,
+not a live OSA integration.

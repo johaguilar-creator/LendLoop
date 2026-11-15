@@ -11,6 +11,7 @@ import conversationRouter from './routes/conversation.routes.js'
 import notificationRouter from './routes/notification.routes.js'
 import reputationRouter from './routes/reputation.routes.js'
 import rewardRouter from './routes/reward.routes.js'
+import { adminReports, reports } from './routes/report.routes.js'
 
 const app = express()
 
@@ -32,6 +33,8 @@ app.use('/api/conversations', conversationRouter)
 app.use('/api/notifications', notificationRouter)
 app.use('/api/reputation', reputationRouter)
 app.use('/api/rewards', rewardRouter)
+app.use('/api/reports', reports)
+app.use('/api/admin/reports', adminReports)
 app.use(notFoundHandler)
 app.use(errorHandler)
 
