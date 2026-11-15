@@ -58,3 +58,30 @@ test('loan history is scoped to an authenticated student', async () => {
     assert.equal(body.error.code, 'UNAUTHENTICATED')
   })
 })
+
+test('borrow request decisions and return actions require authentication', async () => {
+  await withServer(async (baseUrl) => {
+    const requestId = '507f1f77bcf86cd799439011'
+    const endpoints = [
+      [`/api/borrow-requests/${requestId}/decision`, 'PATCH', { decision: 'approve' }],
+      [`/api/loans/${requestId}/return`, 'POST'],
+      [`/api/loans/${requestId}/return`, 'PATCH'],
+    ]
+
+    for (const [path, method, body] of endpoints) {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method,
+        ...(body
+          ? {
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(body),
+            }
+          : {}),
+      })
+      const responseBody = await response.json()
+
+      assert.equal(response.status, 401)
+      assert.equal(responseBody.error.code, 'UNAUTHENTICATED')
+    }
+  })
+})
