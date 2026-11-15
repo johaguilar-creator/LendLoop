@@ -1,11 +1,17 @@
 # LendLoop implementation progress
 
-Baseline commit: `903cb41` (`chore: initialize LendLoop project repository`).
-The local structure correction is on
-`feature/LL-INT-01-initial-project-structure` (`1caabe5`). The baseline push to
-`origin/main` is blocked: GitHub returned HTTP 403 for authenticated account
-`GabrielRamores05`, which lacks write permission to
-`johaguilar-creator/LendLoop`. No feature branches have been pushed.
+Baseline commit in the original local history: `903cb41`
+(`chore: initialize LendLoop project repository`). The local structure
+correction is on `feature/LL-INT-01-initial-project-structure` (`1caabe5`).
+
+The GitHub repository was published on 2026-11-16 after authenticating as
+`johaguilar-creator`. Its `main` remains at the original baseline, and all
+ticket branches are present as unmerged refs. To keep the Trello export and
+Figma source out of public history, branches were pushed from an isolated copy
+with `References/` removed from every reachable commit. The original local
+history was not rewritten; consequently, GitHub commit hashes differ from the
+local hashes recorded in this tracker. Continue work from the sanitized GitHub
+branches rather than pushing the original local refs.
 
 Statuses below reflect the local workspace. “Trello status” is from the
 provided export; implementation status is independent.
