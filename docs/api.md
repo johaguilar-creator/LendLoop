@@ -57,4 +57,5 @@ reserves the item and creates an active loan in a MongoDB transaction. The
 borrower marks an active loan ready to return with
 `POST /loans/:loanId/return`; the owner confirms the return with
 `PATCH /loans/:loanId/return`. The confirmed loan and related request are
-updated together.
+updated together. The server enforces a maximum of five active loans per
+borrower both when requests are submitted and when owners approve them.

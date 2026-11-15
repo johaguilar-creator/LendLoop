@@ -45,7 +45,8 @@ client-supplied user ID.
 ## Decisions and open approvals
 
 - The Figma reference shows a maximum of five concurrent borrowings. This is
-  used as the prototype limit unless the group confirms a different value.
+  used as the backend-enforced prototype limit unless the group confirms a
+  different value.
 - Trello requires group approval of score and reward rules but does not specify
   values. The implementation uses centralized, documented provisional rules:
   a 100-point starting score, +2 for an on-time return, -10 for a late return,

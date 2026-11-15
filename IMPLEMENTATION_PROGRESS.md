@@ -19,7 +19,7 @@ provided export; implementation status is independent.
 | LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-03-api-routing` | `f0a2e4a`; API health/404 envelope tests (6 backend tests passed). |
 | LL-BE-04 | Implement item management and search APIs | Jan Africa | To Do | TESTED | `feature/LL-BE-04-item-management` | `81089e6`; item validation/auth/ID tests; backend suite (12 passed). Mongo-backed listing CRUD still requires configured MongoDB. |
 | LL-BE-05 | Implement borrowing request APIs | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-05-borrowing-requests` | `de3105c`; backend suite (16 passed). Transaction-backed decisions/returns need MongoDB replica set for full-flow testing. |
-| LL-BE-06 | Enforce borrowing limits | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-06-borrowing-limits` | Limit of five is provisional from the Figma reference. |
+| LL-BE-06 | Enforce borrowing limits | Erice Matthew Isaiah Cama | For Approval | TESTED | `feature/LL-BE-06-borrowing-limits` | `6213eba`; limit boundary tests; backend suite (18 passed). Replica-set concurrent approval/return path awaits DB integration. Limit five is provisional from Figma. |
 | LL-BE-07 | Implement chat and messaging APIs | Erice Matthew Isaiah Cama | Doing | NOT STARTED | `feature/LL-BE-07-chat-messaging` | — |
 | LL-BE-08 | Implement notification APIs | Jan Africa | To Do | NOT STARTED | `feature/LL-BE-08-notifications` | — |
 | LL-BE-09 | Implement student credit score system | Erice Matthew Isaiah Cama | Doing | NOT STARTED | `feature/LL-BE-09-credit-score` | Group approval of rules is required by Trello. |
