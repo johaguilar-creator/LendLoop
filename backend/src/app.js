@@ -1,6 +1,8 @@
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import express from 'express'
 import helmet from 'helmet'
+import authRouter from './routes/auth.routes.js'
 import healthRouter from './routes/health.routes.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
@@ -13,8 +15,10 @@ app.use(
     credentials: true,
   }),
 )
+app.use(cookieParser())
 app.use(express.json())
 app.use('/api/health', healthRouter)
+app.use('/api/auth', authRouter)
 app.use(notFoundHandler)
 app.use(errorHandler)
 
