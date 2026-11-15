@@ -2,6 +2,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import mongoose from 'mongoose'
 import { BorrowRequest, Conversation, Item, User } from '../src/models/index.js'
+import app from '../src/app.js'
+
+async function withServer(run) {
+  const server = app.listen(0)
+  await new Promise((resolve) => server.once('listening', resolve))
+  try {
+    await run(`http://127.0.0.1:${server.address().port}`)
+  } finally {
+    await new Promise((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve())),
+    )
+  }
+}
 
 test('user schema requires a name and ADNU email', async () => {
   const missingName = new User({
@@ -50,4 +63,26 @@ test('conversation requires two distinct participants', async () => {
     participants: [participant, participant],
   })
   await assert.rejects(conversation.validate(), /two distinct participants/)
+})
+
+test('health endpoint uses the standard success envelope', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/health`)
+    assert.equal(response.status, 200)
+    assert.deepEqual(await response.json(), {
+      success: true,
+      data: { status: 'ok' },
+    })
+  })
+})
+
+test('unknown routes use the standard error envelope', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/not-a-route`)
+    assert.equal(response.status, 404)
+    assert.deepEqual(await response.json(), {
+      success: false,
+      error: { code: 'NOT_FOUND', message: 'Route not found.' },
+    })
+  })
 })

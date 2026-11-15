@@ -1,12 +1,10 @@
 import { Router } from 'express'
+import { sendSuccess } from '../utils/response.js'
 
 const router = Router()
 
 router.get('/', (_request, response) => {
-  response.json({
-    success: true,
-    data: { status: 'ok' },
-  })
+  return sendSuccess(response, { status: 'ok' })
 })
 
 export default router
