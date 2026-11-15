@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LendLoop Branch Feature Speaker Notes</title>
+  <style>
+    @page { size: A4; margin: 16mm 17mm 18mm; }
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      color: #17212b;
+      font: 10pt/1.48 Arial, Helvetica, sans-serif;
+      margin: 0;
+    }
+    h1, h2, h3 { color: #123b55; line-height: 1.2; }
+    h1 { font-size: 30pt; margin: 0 0 10mm; }
+    h2 { font-size: 19pt; margin: 0 0 5mm; }
+    h3 { font-size: 12pt; margin: 0 0 2mm; }
+    p { margin: 0 0 3mm; }
+    ul, ol { margin: 1.5mm 0 4mm; padding-left: 6mm; }
+    li { margin: 0 0 1.2mm; }
+    a { color: #126b85; text-decoration: none; }
+    .cover { min-height: 255mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
+    .eyebrow { color: #17829a; font-size: 9pt; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; }
+    .subtitle { color: #425466; font-size: 15pt; max-width: 150mm; }
+    .meta { border-top: 2px solid #17829a; margin-top: 15mm; padding-top: 5mm; }
+    .note { background: #edf6f8; border-left: 3px solid #17829a; margin: 4mm 0; padding: 3mm 4mm; }
+    .group { break-before: page; page-break-before: always; }
+    .feature { border-top: 1px solid #cbd6dc; margin-top: 5mm; padding-top: 4mm; break-inside: avoid; page-break-inside: avoid; }
+    .branch { color: #506575; font: 8.5pt Consolas, "Courier New", monospace; overflow-wrap: anywhere; }
+    .label { color: #126b85; font-weight: bold; }
+    .sequence { columns: 2; column-gap: 12mm; }
+    .sequence li { break-inside: avoid; }
+    .small { color: #506575; font-size: 8.5pt; }
+    .closing { break-before: page; page-break-before: always; }
+    @media screen {
+      body { margin: 16mm auto; max-width: 180mm; }
+      .cover { min-height: 240mm; }
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <p class="eyebrow">LendLoop | Project presentation guide</p>
+    <h1>Branch Feature<br>Speaker Notes</h1>
+    <p class="subtitle">A concise presentation script and walkthrough guide for every published feature branch.</p>
+    <div class="meta">
+      <p><strong>Repository:</strong> johaguilar-creator/LendLoop</p>
+      <p><strong>Prepared:</strong> November 16, 2026</p>
+      <p><strong>Coverage:</strong> 27 feature branches, from initial structure through system testing</p>
+    </div>
+    <div class="note">
+      <strong>How to use these notes:</strong> Each branch has a short talk track, a suggested demonstration, and the test evidence or remaining limitation. Adapt the talk track to the audience; do not present provisional product rules or unverified database flows as approved or complete.
+    </div>
+  </section>
+
+  <section>
+    <h2>Opening: what LendLoop does</h2>
+    <p><strong>Suggested opening:</strong> "LendLoop is a campus-focused peer-to-peer lending system. Students can list items, request to borrow them, coordinate through private messaging, and track notifications, reputation, rewards, and safety reports."</p>
+    <p>The React/Vite frontend is in <code>frontend/</code>; the Express/Mongoose API is in <code>backend/</code>; MongoDB stores application data. The API owns validation, access control, and business rules. Browser authentication uses an HTTP-only cookie, and API responses follow a consistent success/error envelope.</p>
+    <p>These notes follow the published branch ancestry so each pull request can be merged after its prerequisite branch. The BE-03 routing foundation appears before BE-02 authentication in that history; the sequence is intentionally not a simple ticket-number sort.</p>
+    <ol class="sequence">
+      <li>INT-01 - Initial project structure</li>
+      <li>BE-01 - Database schemas</li>
+      <li>BE-03 - API routing</li>
+      <li>BE-02 - Authentication</li>
+      <li>BE-04 through BE-11 - Backend capabilities</li>
+      <li>FE-01 through FE-09 - Student-facing screens</li>
+      <li>INT-02 through INT-07 - Integration and system testing</li>
+    </ol>
+    <div class="note">
+      <strong>Important caveats to state clearly:</strong> Full persistence and transaction-heavy end-to-end flows still need MongoDB configured as a replica set. The five-loan cap and credit/reward rules are prototype values pending group approval. "Referred to OSA" is an internal report status, not a live OSA connection.
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Foundation and backend branches</h2>
+
+    <article class="feature">
+      <h3>LL-INT-01 | Set up repository and initial project structure</h3>
+      <p class="branch">feature/LL-INT-01-initial-project-structure</p>
+      <p><span class="label">Say:</span> "This branch establishes the maintainable project shape: a pnpm workspace with separate frontend and backend applications, shared project-level scripts, and architecture/API documentation."</p>
+      <p><span class="label">Show:</span> Point to <code>frontend/</code>, <code>backend/</code>, the root workspace configuration, and the architecture/API docs. Explain that this is the foundation later feature branches build on.</p>
+      <p><span class="label">Evidence:</span> The published branch establishes the React/Vite and Express/Mongoose workspace and its conventions.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-01 | Design initial MongoDB database schemas</h3>
+      <p class="branch">feature/LL-BE-01-database-schemas</p>
+      <p><span class="label">Say:</span> "This branch defines the core persisted entities and how they relate: users, listings, borrowing requests and loans, conversations and messages, notifications, reputation/rewards events, and reports."</p>
+      <p><span class="label">Show:</span> Walk through one relationship chain: an item has an owner; an approved request creates a loan; that loan can support a private conversation and later reputation/reward events.</p>
+      <p><span class="label">Evidence:</span> Four backend tests were recorded for the initial schema work. Database-backed flows require a configured MongoDB instance.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-03 | Set up backend API routing and response format</h3>
+      <p class="branch">feature/LL-BE-03-api-routing</p>
+      <p><span class="label">Say:</span> "This branch makes the API predictable: routes live under <code>/api</code>, successes and failures use standard response envelopes, and errors use consistent HTTP status codes."</p>
+      <p><span class="label">Show:</span> Demonstrate the health endpoint and a not-found/error response. Explain that internal stack traces are not sent back to clients.</p>
+      <p><span class="label">Evidence:</span> Health and 404 envelope coverage was recorded; six backend tests passed at that checkpoint.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-02 | Implement authentication and ADNU email validation</h3>
+      <p class="branch">feature/LL-BE-02-authentication</p>
+      <p><span class="label">Say:</span> "This branch adds account registration and login for eligible ADNU student email addresses, with server-validated sessions rather than trusting identity values from the browser."</p>
+      <p><span class="label">Show:</span> Explain registration validation, login/logout, session restoration, and the HTTP-only cookie. Protected routes derive the user from the validated session.</p>
+      <p><span class="label">Evidence:</span> Nine backend tests were recorded. Full registration/login persistence still needs MongoDB configured.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-04 | Implement item management and search APIs</h3>
+      <p class="branch">feature/LL-BE-04-item-management</p>
+      <p><span class="label">Say:</span> "This branch provides the listing API: students can browse and search available items, while owners can manage their own listings and availability."</p>
+      <p><span class="label">Show:</span> Describe query filters such as search text, category, availability, and sort order; point out that ownership checks protect listing writes and archived listings are excluded from public results.</p>
+      <p><span class="label">Evidence:</span> Validation, authorization, and ID handling tests were added; 12 backend tests passed at that milestone. Mongo-backed CRUD needs database integration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-05 | Implement borrowing request APIs</h3>
+      <p class="branch">feature/LL-BE-05-borrowing-requests</p>
+      <p><span class="label">Say:</span> "This branch implements the lending lifecycle: a borrower requests an item, its owner decides, and an approved request becomes an active loan that can later be returned."</p>
+      <p><span class="label">Show:</span> Walk through pending, approved/rejected/cancelled, active loan, return request, and owner confirmation. Explain that related state changes are intended to be atomic.</p>
+      <p><span class="label">Evidence:</span> Sixteen backend tests passed at the checkpoint. Transaction-backed decisions and returns need a MongoDB replica set for full-flow testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-06 | Enforce borrowing limits</h3>
+      <p class="branch">feature/LL-BE-06-borrowing-limits</p>
+      <p><span class="label">Say:</span> "This branch enforces the active-loan cap on the server both when a request is submitted and when an owner approves it, so the browser cannot bypass the rule."</p>
+      <p><span class="label">Show:</span> Explain the boundary behavior and why the check must run again at approval time, when another request may already have changed the borrower's active-loan count.</p>
+      <p><span class="label">Evidence:</span> Limit-boundary tests were recorded; 18 backend tests passed. The cap of five is provisional, and concurrent transaction behavior needs replica-set testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-07 | Implement chat and messaging APIs</h3>
+      <p class="branch">feature/LL-BE-07-chat-messaging</p>
+      <p><span class="label">Say:</span> "This branch adds private conversations and messages for the people involved in a loan. Every read and write checks that the signed-in user is a participant."</p>
+      <p><span class="label">Show:</span> Describe the conversation list, paginated history, message creation, and read state. Emphasize that a client-supplied conversation ID alone does not grant access.</p>
+      <p><span class="label">Evidence:</span> Participant authorization and message validation were tested; 21 backend tests passed. Mongo transaction paths need replica-set testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-08 | Implement notification APIs</h3>
+      <p class="branch">feature/LL-BE-08-notifications</p>
+      <p><span class="label">Say:</span> "This branch adds a notification center API with recipient-scoped results, unread filtering, and a mark-as-read action."</p>
+      <p><span class="label">Show:</span> Explain how borrowing and messaging events create notifications server-side and how a user can only read or update their own notifications.</p>
+      <p><span class="label">Evidence:</span> Recipient authorization, read state, and filtering tests were recorded; 24 backend tests passed. Persisted recipient isolation needs MongoDB integration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-09 | Implement student credit score system</h3>
+      <p class="branch">feature/LL-BE-09-credit-score</p>
+      <p><span class="label">Say:</span> "This branch makes reputation server-owned. The API records score events when loans are returned, prevents client edits, and exposes the student's current score and history."</p>
+      <p><span class="label">Show:</span> Describe the event ledger and bounds/idempotency safeguards. The current prototype values are a 100-point starting score, plus two for on-time return, and minus ten for late return.</p>
+      <p><span class="label">Evidence:</span> Score bounds and rule tests were recorded; 26 backend tests passed. These values are provisional, and return-event persistence needs MongoDB integration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-10 | Implement rewards system</h3>
+      <p class="branch">feature/LL-BE-10-rewards</p>
+      <p><span class="label">Say:</span> "This branch adds a server-maintained reward balance and event ledger. The client can view its rewards but cannot grant itself points."</p>
+      <p><span class="label">Show:</span> Explain the idempotency key that prevents duplicate awards when the same return event is processed again. The current prototype awards 50 points for an on-time return.</p>
+      <p><span class="label">Evidence:</span> Award and protected-balance tests were recorded; 28 backend tests passed. The points rule is provisional and persistent ledger behavior needs replica-set testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-BE-11 | Implement reporting and OSA referral APIs</h3>
+      <p class="branch">feature/LL-BE-11-reporting-osa</p>
+      <p><span class="label">Say:</span> "This branch adds private student reports and an administrator-only review workflow. A reporter's identity comes from the authenticated session, and students cannot access the admin queue."</p>
+      <p><span class="label">Show:</span> Describe report validation, authorized review, and the internal referral status. Be explicit that this does not connect to a live OSA system.</p>
+      <p><span class="label">Evidence:</span> Validation, reporter authentication, and admin-role tests were recorded; 32 backend tests passed. Persisted review needs MongoDB integration.</p>
+    </article>
+  </section>
+
+  <section class="group">
+    <h2>Frontend branches</h2>
+
+    <article class="feature">
+      <h3>LL-FE-01 | Build registration and login screens</h3>
+      <p class="branch">feature/LL-FE-01-registration-login</p>
+      <p><span class="label">Say:</span> "This branch replaces the authentication placeholder with registration and login screens connected to the session API."</p>
+      <p><span class="label">Show:</span> Walk through form validation, credentialed requests, session restoration, and logout. The frontend keeps the server's HTTP-only cookie rather than storing a session token itself.</p>
+      <p><span class="label">Evidence:</span> Frontend TypeScript check and production build passed. Full auth persistence awaits configured MongoDB.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-02 | Build student profile and account management screens</h3>
+      <p class="branch">feature/LL-FE-02-student-profile</p>
+      <p><span class="label">Say:</span> "This branch lets a student view and edit profile details while keeping account identifiers and reputation values controlled by the server."</p>
+      <p><span class="label">Show:</span> Demonstrate editable name, bio, and HTTPS avatar URL; point out read-only email/student ID and the reputation display.</p>
+      <p><span class="label">Evidence:</span> Backend 35-test suite, frontend type check, and build passed at the recorded checkpoint. Persistent profile edits need database configuration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-03 | Build item listing and search interface</h3>
+      <p class="branch">feature/LL-FE-03-item-listing-search</p>
+      <p><span class="label">Say:</span> "This branch turns browsing into an API-backed experience with search, category and availability filters, sorting, and pagination."</p>
+      <p><span class="label">Show:</span> Search for an item, change a filter, page through results, and show loading, empty, and error states.</p>
+      <p><span class="label">Evidence:</span> Backend 36-test suite and frontend type check/build passed.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-04 | Build item details and listing creation screens</h3>
+      <p class="branch">feature/LL-FE-04-item-details-listing</p>
+      <p><span class="label">Say:</span> "This branch connects item detail pages and owner listing management to the API, including create, edit, archive, and availability controls."</p>
+      <p><span class="label">Show:</span> Open an item, review its details, then explain the owner-only editing path and optional HTTPS image URL.</p>
+      <p><span class="label">Evidence:</span> Backend 38-test suite and frontend type check/build passed. Full database persistence needs MongoDB.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-05 | Build borrowing request and loan management screens</h3>
+      <p class="branch">feature/LL-FE-05-borrowing-management</p>
+      <p><span class="label">Say:</span> "This branch gives borrowers and owners the screens to request an item, decide on a request, track active loans, and confirm a return."</p>
+      <p><span class="label">Show:</span> Point out role-specific actions, loan states, return confirmation, and feedback when the active borrowing limit is reached.</p>
+      <p><span class="label">Evidence:</span> Backend 39-test suite and frontend type check/build passed. Transaction workflows need replica-set integration testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-06 | Build student chat interface</h3>
+      <p class="branch">feature/LL-FE-06-chat-interface</p>
+      <p><span class="label">Say:</span> "This branch provides a participant-scoped chat UI with conversation history, read state, and message sending."</p>
+      <p><span class="label">Show:</span> Demonstrate the conversation list and message history; describe pagination, sender/time presentation, and loading/empty/error states.</p>
+      <p><span class="label">Evidence:</span> Backend 40-test suite and frontend type check/build passed. Two-account database-backed messaging needs replica-set testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-07 | Build notification interface</h3>
+      <p class="branch">feature/LL-FE-07-notifications</p>
+      <p><span class="label">Say:</span> "This branch adds an API-backed notification center so students can review all or unread notifications and mark an entry as read."</p>
+      <p><span class="label">Show:</span> Switch between all/unread, open an entry, and explain pagination plus the loading, empty, and error feedback.</p>
+      <p><span class="label">Evidence:</span> Backend 40-test suite and frontend type check/build passed.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-08 | Build student credit score and rewards UI</h3>
+      <p class="branch">feature/LL-FE-08-credit-rewards</p>
+      <p><span class="label">Say:</span> "This branch makes a student's reputation and reward history visible without allowing client-side changes to those values."</p>
+      <p><span class="label">Show:</span> Point out score/standing, the provisional-policy notice, reward balance, and the score/reward event histories including empty/loading/error states.</p>
+      <p><span class="label">Evidence:</span> Backend 42-test suite and frontend type check/build passed. Event persistence needs MongoDB transaction testing.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-FE-09 | Build item reporting interface</h3>
+      <p class="branch">feature/LL-FE-09-item-reporting</p>
+      <p><span class="label">Say:</span> "This branch adds a private reporting form for an item, user, or loan, with category-specific choices, validation, and a clear submission result."</p>
+      <p><span class="label">Show:</span> Open the form from item details or loan history, select a reason, submit, and point out server-error handling and confirmation. The mock admin queue was removed.</p>
+      <p><span class="label">Evidence:</span> Backend 42-test suite and frontend type check/build passed. Persisted reports need database integration.</p>
+    </article>
+  </section>
+
+  <section class="group">
+    <h2>Integration and system branches</h2>
+
+    <article class="feature">
+      <h3>LL-INT-02 | Integrate registration and login</h3>
+      <p class="branch">feature/LL-INT-02-auth-integration</p>
+      <p><span class="label">Say:</span> "This branch checks the browser-to-API authentication contract: credentialed requests, allowed frontend origin, and the expected session endpoints."</p>
+      <p><span class="label">Show:</span> Explain the CORS preflight test and how frontend auth calls align with backend routes. Do not claim database-backed registration has been fully accepted.</p>
+      <p><span class="label">Evidence:</span> Four auth tests, frontend type check, and build passed; valid persisted registration/login awaits MongoDB.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-INT-03 | Integrate item search and borrowing workflows</h3>
+      <p class="branch">feature/LL-INT-03-item-borrowing-integration</p>
+      <p><span class="label">Say:</span> "This branch audits the item and loan user journeys across the frontend and backend, checking that requests, route names, and response fields line up."</p>
+      <p><span class="label">Show:</span> Trace a search result into item details, a borrow request, an owner decision, and a return. Distinguish contract review from a completed database end-to-end run.</p>
+      <p><span class="label">Evidence:</span> Backend 43-test suite and frontend type check/build passed; full item-to-loan acceptance needs a MongoDB replica set.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-INT-04 | Integrate chat and messaging functionality</h3>
+      <p class="branch">feature/LL-INT-04-chat-integration</p>
+      <p><span class="label">Say:</span> "This branch verifies that conversation, message history, pagination, and read-state calls in the chat screen match the backend contract."</p>
+      <p><span class="label">Show:</span> Explain the participant-only boundary and outline the two-account acceptance test that should be run once a replica set is available.</p>
+      <p><span class="label">Evidence:</span> Four chat contract tests and frontend type check/build passed; live two-account isolation testing remains blocked on MongoDB integration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-INT-05 | Integrate notifications, credit scores, and rewards</h3>
+      <p class="branch">feature/LL-INT-05-notifications-credit-rewards</p>
+      <p><span class="label">Say:</span> "This branch verifies that the notification, reputation, and reward screens call the matching authenticated APIs and consume the expected response fields."</p>
+      <p><span class="label">Show:</span> Trace a notification and the score/reward histories. Explain that persisted per-student data and loan-triggered updates still need end-to-end verification.</p>
+      <p><span class="label">Evidence:</span> Nine focused backend tests and frontend type check/build passed; persistence and loan-triggered updates need MongoDB integration.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-INT-06 | Integrate reporting and OSA referral functionality</h3>
+      <p class="branch">feature/LL-INT-06-reporting-osa-integration</p>
+      <p><span class="label">Say:</span> "This branch checks that the reporting form submits the backend report contract and handles validation errors and confirmation."</p>
+      <p><span class="label">Show:</span> Describe student submission and administrator review. Clarify that persisted review and any external OSA connection are not completed by this integration.</p>
+      <p><span class="label">Evidence:</span> Four report API tests and frontend type check/build passed. Report persistence needs MongoDB; OSA referral is only an internal status.</p>
+    </article>
+
+    <article class="feature">
+      <h3>LL-INT-07 | Perform system-wide testing and bug fixing</h3>
+      <p class="branch">feature/LL-INT-07-system-testing</p>
+      <p><span class="label">Say:</span> "This branch removes fabricated home activity and replaces it with recent notifications from the API, then records the system-level checks and remaining integration gap."</p>
+      <p><span class="label">Show:</span> Point out the home activity loading, empty, and error states. Summarize the API audit and the distinction between automated contract/unit tests and full database acceptance.</p>
+      <p><span class="label">Evidence:</span> Backend suite: 43 passed; frontend TypeScript check and production build passed. Critical persistence and transaction flows still need MongoDB replica-set configuration.</p>
+    </article>
+  </section>
+
+  <section class="closing">
+    <h2>Closing: what is ready and what remains</h2>
+    <p><strong>Suggested closing:</strong> "The project now has a structured frontend/backend foundation, API-backed student experiences, and server-side rules for lending, messaging, notifications, reputation, rewards, and reporting. The recorded automated checks pass, but we are not calling the database workflows fully accepted until we run them against a configured MongoDB replica set."</p>
+    <h3>Before presenting a live demo</h3>
+    <ol>
+      <li>Start the frontend and API with the documented local environment configuration.</li>
+      <li>Use a disposable test database; do not present production or personal account data.</li>
+      <li>For borrow/return and other transaction flows, use MongoDB configured as a replica set.</li>
+      <li>Use two test accounts for owner/borrower and participant-isolation demonstrations.</li>
+      <li>Present the five-loan cap and score/reward values as provisional, not approved policy.</li>
+      <li>Describe OSA referral as an internal workflow status unless a real integration is separately built and approved.</li>
+    </ol>
+    <p class="small">Prepared from the LendLoop implementation progress tracker and the project architecture/API documentation. This guide summarizes the feature branches; it is not a substitute for the ticket acceptance criteria or a live integration test report.</p>
+  </section>
+</body>
+</html>
