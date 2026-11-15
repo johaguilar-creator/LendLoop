@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { useCallback, useEffect } from 'react'
 import AuthScreen from './components/AuthScreen'
+import ProfilePage from './components/ProfilePage'
 import { ApiError, api, type Student } from './lib/api'
 
 type Page = 'Home' | 'Discover' | 'My loans' | 'Messages' | 'Notifications' | 'Profile' | 'Reports'
@@ -106,15 +107,17 @@ export default function App() {
     )
   }
   if (!user) return <AuthScreen onAuthenticated={setUser} />
-  return <Dashboard user={user} onLogout={signOut} />
+  return <Dashboard user={user} onLogout={signOut} onUserUpdated={setUser} />
 }
 
 function Dashboard({
   user,
   onLogout,
+  onUserUpdated,
 }: {
   user: Student
   onLogout: () => void
+  onUserUpdated: (user: Student) => void
 }) {
   const [page, setPage] = useState<Page>('Home')
   const [detail, setDetail] = useState(false)
@@ -207,10 +210,7 @@ function Dashboard({
         {['Your request was approved|Miguel approved “Scientific Calculator”.|12 min ago','Upcoming return date|Your calculator is due tomorrow at 5:00 PM.|1 hr ago','You earned 50 Loop Points|On-time returns build your score and unlock badges.|Yesterday'].map((n,i)=>{const a=n.split('|');return <div className={`notification ${i===0?'unread':''}`} key={n}><div className={`activity-icon ${i===1?'orange':''}`}><Icon name={i===1?'bell':'check'}/></div><div><strong>{a[0]}</strong><p>{a[1]}</p></div><time>{a[2]}</time></div>})}
       </div>}
 
-      {page === 'Profile' && <div className="content"><PageTitle title="Student profile" text="Your reputation across the LendLoop community."/>
-        <div className="profile-grid"><section className="profile-card"><div className="big-avatar">AS</div><h2>Alyssa Sy</h2><p>alyssa.sy@gbox.adnu.edu.ph</p><span className="verified">✓ University verified</span><hr/><div className="profile-stats"><div><strong>12</strong><small>Items lent</small></div><div><strong>8</strong><small>Items borrowed</small></div><div><strong>100%</strong><small>On-time</small></div></div></section>
-        <section className="reputation"><h2>Your reputation</h2><div className="score-block"><div className="score-ring large">86</div><div><strong>Great standing</strong><p>Your reliable borrowing history puts you in the top 15%.</p></div></div><div className="badge-row"><div>★<span>1,240<br/><small>Loop Points</small></span></div><div>✓<span>Trusted<br/><small>Lender badge</small></span></div><div>5<span>2 of 5<br/><small>Borrowing limit</small></span></div></div></section></div>
-      </div>}
+      {page === 'Profile' && <div className="content"><ProfilePage user={user} onUserUpdated={onUserUpdated} /></div>}
 
       {page === 'Reports' && <div className="content"><PageTitle title="Reports & OSA referrals" text="Raise a concern safely. Serious cases can be referred to the Office of Student Affairs."/>
         <div className="report-grid"><section className="form-card"><h2>Submit a report</h2><label>Report category</label><select defaultValue=""><option value="" disabled>Select a category</option><option>Item not returned</option><option>Damaged item</option><option>Inappropriate behavior</option></select><label>Related transaction</label><select><option>Scientific Calculator — #LL-1024</option></select><label>Tell us what happened</label><textarea placeholder="Share relevant details..."/><Button>Submit report</Button></section>
