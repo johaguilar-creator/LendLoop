@@ -38,7 +38,6 @@ export const itemIdSchema = z.object({
   params: z.object({ itemId }),
   query: z.object({}),
 })
-
 export const createItemSchema = z.object({
   body: createItemBody,
   params: z.object({}),

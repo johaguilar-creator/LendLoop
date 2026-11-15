@@ -15,9 +15,10 @@ export const BORROW_REQUEST_STATUSES = [
   'approved',
   'rejected',
   'cancelled',
+  'returned',
 ]
 
-export const LOAN_STATUSES = ['active', 'returned']
+export const LOAN_STATUSES = ['active', 'return_requested', 'returned']
 
 export const REPORT_CATEGORIES = [
   'item_not_returned',
