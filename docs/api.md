@@ -40,7 +40,7 @@ operation.
 | Profile | `GET /users/me`, `PATCH /users/me` |
 | Items | `GET /items`, `GET /items/mine`, `GET /items/:itemId`, `POST /items`, `PATCH /items/:itemId`, `DELETE /items/:itemId` |
 | Borrowing | `POST /borrow-requests`, `GET /borrow-requests`, `PATCH /borrow-requests/:requestId/decision`, `GET /loans`, `POST /loans/:loanId/return`, `PATCH /loans/:loanId/return` |
-| Messaging | `GET /conversations`, `GET /conversations/:conversationId/messages`, `POST /conversations/:conversationId/messages` |
+| Messaging | `GET /conversations`, `GET /conversations/:conversationId/messages`, `POST /conversations/:conversationId/messages`, `PATCH /conversations/:conversationId/read` |
 | Notifications | `GET /notifications`, `PATCH /notifications/:notificationId/read` |
 | Reputation | `GET /reputation/me`, `GET /reputation/me/events` |
 | Reports | `POST /reports`, `GET /admin/reports`, `PATCH /admin/reports/:reportId` |
@@ -59,3 +59,7 @@ borrower marks an active loan ready to return with
 `PATCH /loans/:loanId/return`. The confirmed loan and related request are
 updated together. The server enforces a maximum of five active loans per
 borrower both when requests are submitted and when owners approve them.
+
+Approval creates a private conversation for the loan. Conversation and message
+reads and writes require participant membership; `PATCH
+/conversations/:conversationId/read` marks incoming messages as read.

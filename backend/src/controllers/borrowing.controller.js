@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import {
   BorrowRequest,
+  Conversation,
   Item,
   Loan,
   MAX_ACTIVE_BORROWINGS,
@@ -161,6 +162,15 @@ export async function decideBorrowRequest(request, response) {
             owner: decidedRequest.owner,
             startedAt: new Date(),
             dueAt: decidedRequest.proposedReturnDate,
+          },
+        ],
+        { session },
+      )
+      await Conversation.create(
+        [
+          {
+            participants: [decidedRequest.borrower, decidedRequest.owner],
+            loan: loan.id,
           },
         ],
         { session },
