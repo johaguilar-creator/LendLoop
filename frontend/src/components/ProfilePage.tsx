@@ -1,5 +1,21 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { ApiError, api, type Student } from '../lib/api'
+
+type CreditEvent = {
+  _id: string
+  reason: 'on_time_return' | 'late_return'
+  delta: number
+  scoreAfter: number
+  createdAt: string
+}
+
+type RewardEvent = {
+  _id: string
+  type: 'on_time_return'
+  points: number
+  description: string
+  createdAt: string
+}
 
 type ProfilePageProps = {
   user: Student
@@ -124,21 +140,119 @@ export default function ProfilePage({ user, onUserUpdated }: ProfilePageProps) {
         </section>
       </div>
 
-      <section className="reputation profile-reputation">
-        <h2>Your reputation</h2>
-        <div className="score-block">
-          <div className="score-ring large">{user.creditScore}</div>
-          <div>
-            <strong>Current LoopScore</strong>
-            <p>Your score is updated from confirmed loan activity. Scoring rules are provisional.</p>
-          </div>
-        </div>
-        <div className="badge-row">
-          <div>★<span>{user.rewardPoints}<br /><small>Loop Points</small></span></div>
-          <div>↗<span>{user.activeBorrowingCount}<br /><small>Active loans</small></span></div>
-          <div>✓<span>{user.role === 'admin' ? 'Administrator' : 'Student'}<br /><small>Account role</small></span></div>
-        </div>
-      </section>
+      <ReputationHistory user={user} />
     </>
+  )
+}
+
+function ReputationHistory({ user }: { user: Student }) {
+  const [creditScore, setCreditScore] = useState<number | null>(null)
+  const [standing, setStanding] = useState('')
+  const [rulesStatus, setRulesStatus] = useState('')
+  const [points, setPoints] = useState<number | null>(null)
+  const [creditEvents, setCreditEvents] = useState<CreditEvent[]>([])
+  const [rewardEvents, setRewardEvents] = useState<RewardEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [retry, setRetry] = useState(0)
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+    void Promise.all([
+      api.get<{ creditScore: number; standing: string; rulesStatus: string }>('/reputation/me'),
+      api.get<{ events: CreditEvent[] }>('/reputation/me/events'),
+      api.get<{ points: number }>('/rewards/me'),
+      api.get<{ events: RewardEvent[] }>('/rewards/me/events'),
+    ])
+      .then(([reputation, creditHistory, rewards, rewardHistory]) => {
+        if (active) {
+          setCreditScore(reputation.creditScore)
+          setStanding(reputation.standing)
+          setRulesStatus(reputation.rulesStatus)
+          setCreditEvents(creditHistory.events)
+          setPoints(rewards.points)
+          setRewardEvents(rewardHistory.events)
+        }
+      })
+      .catch((requestError: unknown) => {
+        if (active) {
+          setError(
+            requestError instanceof ApiError
+              ? requestError.message
+              : 'Unable to load reputation history. Check your connection and try again.',
+          )
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [retry, user.creditScore, user.id, user.rewardPoints])
+
+  return (
+    <section className="reputation profile-reputation">
+      <h2>Your reputation</h2>
+      {loading && <div className="items-state" role="status">Loading your score and rewards…</div>}
+      {!loading && error && (
+        <div className="items-state items-error" role="alert">
+          <p>{error}</p>
+          <button className="btn-secondary" onClick={() => setRetry((value) => value + 1)}>Try again</button>
+        </div>
+      )}
+      {!loading && !error && (
+        <>
+          <div className="score-block">
+            <div className="score-ring large">{creditScore}</div>
+            <div>
+              <strong>{standing}</strong>
+              <p>Current LoopScore from the LendLoop API.</p>
+              {rulesStatus === 'provisional' && <small className="provisional-note">Scoring rules are provisional pending group approval.</small>}
+            </div>
+          </div>
+          <div className="badge-row">
+            <div>★<span>{points?.toLocaleString()}<br /><small>Loop Points</small></span></div>
+            <div>↗<span>{user.activeBorrowingCount}<br /><small>Active loans</small></span></div>
+            <div>✓<span>{user.role === 'admin' ? 'Administrator' : 'Student'}<br /><small>Account role</small></span></div>
+          </div>
+          <div className="reputation-history-grid">
+            <section className="reputation-history">
+              <h3>Score history</h3>
+              {creditEvents.length === 0 ? (
+                <p className="empty-note">Your score history will appear after a loan is returned.</p>
+              ) : creditEvents.map((event) => (
+                <article className="reputation-event" key={event._id}>
+                  <div>
+                    <strong>{event.reason === 'on_time_return' ? 'On-time return' : 'Late return'}</strong>
+                    <time>{new Date(event.createdAt).toLocaleDateString()}</time>
+                  </div>
+                  <span className={event.delta >= 0 ? 'event-positive' : 'event-negative'}>
+                    {event.delta > 0 ? '+' : ''}{event.delta} · {event.scoreAfter}
+                  </span>
+                </article>
+              ))}
+            </section>
+            <section className="reputation-history">
+              <h3>Reward history</h3>
+              {rewardEvents.length === 0 ? (
+                <p className="empty-note">Eligible reward activity will appear here.</p>
+              ) : rewardEvents.map((event) => (
+                <article className="reputation-event" key={event._id}>
+                  <div>
+                    <strong>{event.description}</strong>
+                    <time>{new Date(event.createdAt).toLocaleDateString()}</time>
+                  </div>
+                  <span className="event-positive">+{event.points} pts</span>
+                </article>
+              ))}
+            </section>
+          </div>
+        </>
+      )}
+    </section>
   )
 }

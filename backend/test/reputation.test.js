@@ -43,3 +43,13 @@ test('reputation endpoint requires an authenticated student', async () => {
     assert.equal(body.error.code, 'UNAUTHENTICATED')
   })
 })
+
+test('credit score history requires an authenticated student', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/reputation/me/events`)
+    const body = await response.json()
+
+    assert.equal(response.status, 401)
+    assert.equal(body.error.code, 'UNAUTHENTICATED')
+  })
+})
