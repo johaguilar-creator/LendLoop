@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import app from '../src/app.js'
+import { itemSearchSchema } from '../src/validation/item.validation.js'
 
 async function withServer(run) {
   const server = app.listen(0)
@@ -23,6 +24,14 @@ test('item search rejects invalid filters and bounds pagination', async () => {
 
     assert.equal(response.status, 400)
     assert.equal(body.error.code, 'VALIDATION_ERROR')
+  })
+
+  test('item search accepts availability filters and defaults to available listings', () => {
+    const parse = (query) => itemSearchSchema.safeParse({ body: {}, params: {}, query })
+    assert.equal(parse({ availability: 'unavailable' }).success, true)
+    assert.equal(parse({ availability: 'all' }).success, true)
+    assert.equal(parse({ availability: 'pending' }).success, false)
+    assert.equal(parse({}).data.query.availability, 'available')
   })
 })
 

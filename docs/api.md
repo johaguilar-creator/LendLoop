@@ -60,10 +60,11 @@ and reputation values are not editable through this endpoint. Avatar URLs must
 use HTTPS.
 
 Query pagination uses `page` (1-based) and `limit` (bounded to 100). Item
-search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
-The public item list includes available, non-archived listings only. Owners use
-`GET /items/mine` to retrieve their own unavailable listings; item writes are
-authenticated and ownership-checked.
+search uses `q`, `category`, `availability` (`available`, `unavailable`, or
+`all`; defaults to `available`), and `sort` (`newest`, `oldest`, or `title`).
+Archived listings are never included. `GET /items/mine` returns the
+authenticated owner's non-archived listings, including unavailable ones; item
+writes are authenticated and ownership-checked.
 
 Borrow requests transition from `pending` to `approved`, `rejected`, or
 `cancelled`, then to `returned` after the related loan is returned. Approval

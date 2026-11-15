@@ -30,6 +30,23 @@ export type Student = {
   createdAt: string
 }
 
+export type LendingItem = {
+  _id: string
+  title: string
+  description: string
+  category: string
+  condition: string
+  imageUrl: string
+  available: boolean
+  owner: {
+    _id: string
+    name: string
+    avatarUrl: string
+    creditScore: number
+  }
+  createdAt: string
+}
+
 type SuccessEnvelope<T> = { success: true; data: T }
 type ErrorEnvelope = { success: false; error: ApiErrorBody }
 

@@ -3,7 +3,10 @@ import { ApiError } from '../middleware/ApiError.js'
 import { sendSuccess } from '../utils/response.js'
 
 function itemQuery(search) {
-  const filter = { available: true, archivedAt: null }
+  const filter = { archivedAt: null }
+  if (search.availability !== 'all') {
+    filter.available = search.availability === 'available'
+  }
   if (search.category) filter.category = search.category
   if (search.q) {
     const escaped = search.q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
