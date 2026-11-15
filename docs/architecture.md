@@ -31,7 +31,8 @@ client-supplied user ID.
 - **BorrowRequest** links an item, borrower, and owner. Its workflow is
   `pending -> approved | rejected | cancelled`; approval creates a **Loan**.
 - **Loan** links the approved request, item, borrower, and owner. Its workflow
-  is `active -> returned`; due dates determine overdue state.
+  is `active -> return_requested -> returned`; due dates determine overdue
+  state.
 - **Conversation** is restricted to its participants and may reference a loan.
   **Message** records sender and creation time.
 - **Notification** and **RewardEvent** are recipient/owner scoped. Reward events

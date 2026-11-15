@@ -39,7 +39,7 @@ operation.
 | Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me` |
 | Profile | `GET /users/me`, `PATCH /users/me` |
 | Items | `GET /items`, `GET /items/mine`, `GET /items/:itemId`, `POST /items`, `PATCH /items/:itemId`, `DELETE /items/:itemId` |
-| Borrowing | `POST /borrow-requests`, `GET /borrow-requests`, `PATCH /borrow-requests/:requestId/decision`, `GET /loans`, `POST /loans/:loanId/return` |
+| Borrowing | `POST /borrow-requests`, `GET /borrow-requests`, `PATCH /borrow-requests/:requestId/decision`, `GET /loans`, `POST /loans/:loanId/return`, `PATCH /loans/:loanId/return` |
 | Messaging | `GET /conversations`, `GET /conversations/:conversationId/messages`, `POST /conversations/:conversationId/messages` |
 | Notifications | `GET /notifications`, `PATCH /notifications/:notificationId/read` |
 | Reputation | `GET /reputation/me`, `GET /reputation/me/events` |
@@ -50,3 +50,10 @@ search uses `q`, `category`, and `sort` (`newest`, `oldest`, or `title`).
 The public item list includes available, non-archived listings only. Owners use
 `GET /items/mine` to retrieve their own unavailable listings; item writes are
 authenticated and ownership-checked.
+
+Borrow requests transition from `pending` to `approved`, `rejected`, or
+`cancelled`. Approval reserves the item and creates an active loan in a MongoDB
+transaction. The borrower marks an active loan ready to return with
+`POST /loans/:loanId/return`; the owner confirms the return with
+`PATCH /loans/:loanId/return`. The confirmed loan and related request are
+updated together.
