@@ -14,7 +14,7 @@ provided export; implementation status is independent.
 |---|---|---|---|---|---|---|
 | LL-UI-01 | Design LendLoop system mock screens in Figma | Ian Karl S. Esmabe | Done | IMPLEMENTED | Existing Figma source | Audited; reference project retained locally. |
 | LL-INT-01 | Set up repository and initial project structure | Ian Karl S. Esmabe | Done | BLOCKED | `feature/LL-INT-01-initial-project-structure` | `1caabe5`; local React/Vite and Express/Mongoose workspace; GitHub push requires repository write access. |
-| LL-BE-01 | Design initial MongoDB database schemas | Jan Africa | For Approval | NOT STARTED | `feature/LL-BE-01-database-schemas` | — |
+| LL-BE-01 | Design initial MongoDB database schemas | Jan Africa | For Approval | TESTED | `feature/LL-BE-01-database-schemas` | `7715165`; `pnpm --filter @lendloop/backend test` (4 passed). |
 | LL-BE-02 | Implement authentication and ADNU email validation | Jan Africa | For Approval | NOT STARTED | `feature/LL-BE-02-authentication` | — |
 | LL-BE-03 | Set up backend API routing and response format | Erice Matthew Isaiah Cama | For Approval | NOT STARTED | `feature/LL-BE-03-api-routing` | — |
 | LL-BE-04 | Implement item management and search APIs | Jan Africa | To Do | NOT STARTED | `feature/LL-BE-04-item-management` | — |
