@@ -45,7 +45,9 @@ export async function listMyItems(request, response) {
   const items = await Item.find({
     owner: request.user.id,
     archivedAt: null,
-  }).sort({ updatedAt: -1 })
+  })
+    .sort({ updatedAt: -1 })
+    .populate('owner', 'name avatarUrl creditScore')
   return sendSuccess(response, { items })
 }
 

@@ -2,10 +2,13 @@ import { useState, type ReactNode } from 'react'
 import { useCallback, useEffect } from 'react'
 import AuthScreen from './components/AuthScreen'
 import ItemBrowser from './components/ItemBrowser'
+import ItemDetailsPage from './components/ItemDetailsPage'
+import ListingForm from './components/ListingForm'
+import MyListingsPage from './components/MyListingsPage'
 import ProfilePage from './components/ProfilePage'
 import { ApiError, api, type LendingItem, type Student } from './lib/api'
 
-type Page = 'Home' | 'Discover' | 'My loans' | 'Messages' | 'Notifications' | 'Profile' | 'Reports'
+type Page = 'Home' | 'Discover' | 'My loans' | 'My listings' | 'Messages' | 'Notifications' | 'Profile' | 'Reports' | 'Create listing'
 
 const photos = [
   'https://images.unsplash.com/photo-1646911996830-187b66019a2d?auto=format&fit=crop&w=900&q=80',
@@ -103,23 +106,24 @@ function Dashboard({
   onUserUpdated: (user: Student) => void
 }) {
   const [page, setPage] = useState<Page>('Home')
-  const [detail, setDetail] = useState(false)
   const [selectedItem, setSelectedItem] = useState<LendingItem | null>(null)
   const [discoverQuery, setDiscoverQuery] = useState('')
+  const [listingRefresh, setListingRefresh] = useState(0)
   const [mobile, setMobile] = useState(false)
   const nav: { page: Page; icon: string }[] = [
     { page: 'Home', icon: 'home' }, { page: 'Discover', icon: 'search' }, { page: 'My loans', icon: 'loans' },
+    { page: 'My listings', icon: 'loans' },
     { page: 'Messages', icon: 'chat' }, { page: 'Notifications', icon: 'bell' }, { page: 'Profile', icon: 'user' }, { page: 'Reports', icon: 'flag' }
   ]
-  const go = (p: Page) => { setPage(p); setDetail(false); setSelectedItem(null); setMobile(false) }
-  const openItem = (item: LendingItem) => { setSelectedItem(item); setDetail(true); setPage('Discover') }
+  const go = (p: Page) => { setPage(p); setSelectedItem(null); setMobile(false) }
+  const openItem = (item: LendingItem) => { setSelectedItem(item); setPage('Discover') }
 
   return <div className="app-shell">
     <aside className={mobile ? 'sidebar open' : 'sidebar'}>
       <div className="brand" onClick={() => go('Home')}><div className="brand-mark">L</div><div>Lend<span>Loop</span></div></div>
       <nav>
         <div className="nav-label">MENU</div>
-        {nav.slice(0, 6).map(n => <button key={n.page} className={page === n.page ? 'nav-item active' : 'nav-item'} onClick={() => go(n.page)}>
+        {nav.slice(0, 7).map(n => <button key={n.page} className={page === n.page ? 'nav-item active' : 'nav-item'} onClick={() => go(n.page)}>
           <Icon name={n.icon}/><span>{n.page}</span>{n.page === 'Notifications' && <b>3</b>}
         </button>)}
         <div className="nav-label support">SUPPORT</div>
@@ -136,11 +140,11 @@ function Dashboard({
         <div className="mobile-brand">LendLoop</div>
         <div className="header-actions">
           <button className="icon-btn" onClick={() => go('Notifications')}><Icon name="bell"/><i /></button>
-          <Button onClick={() => go('Discover')}><Icon name="plus" size={17}/> List an item</Button>
+          <Button onClick={() => go('Create listing')}><Icon name="plus" size={17}/> List an item</Button>
         </div>
       </header>
 
-      {page === 'Home' && !detail && <div className="content">
+      {page === 'Home' && <div className="content">
         <section className="welcome">
           <div><div className="kicker">ATENEO DE NAGA UNIVERSITY</div><h1>Good morning, {user.name.split(' ')[0]}.</h1><p>What do you need today? Borrow from students you know and trust.</p></div>
           <div className="trust-card"><div className="score-ring">86</div><div><span>Great standing</span><strong>Your LoopScore</strong><small>Top 15% of borrowers</small></div><Icon name="arrow"/></div>
@@ -160,22 +164,27 @@ function Dashboard({
         </div>
       </div>}
 
-      {page === 'Discover' && !detail && <div className="content"><PageTitle title="Discover items" text="Find what you need from the ADNU community." />
+      {page === 'Discover' && !selectedItem && <div className="content"><PageTitle title="Discover items" text="Find what you need from the ADNU community." />
         <ItemBrowser initialQuery={discoverQuery} onOpen={openItem} />
       </div>}
 
-      {detail && selectedItem && <div className="content detail-page">
-        <button className="back" onClick={() => {setDetail(false);setSelectedItem(null)}}>← Back to discover</button>
-        <div className="detail-grid">
-          <img className="detail-image" src={selectedItem.imageUrl || photos[0]} alt={selectedItem.title}/>
-          <div className="detail-info"><div className="availability inline"><i/>{selectedItem.available ? 'Available now' : 'Currently unavailable'}</div><div className="eyebrow">{selectedItem.category.replace(/_/g, ' ')} · {selectedItem.condition.replace(/_/g, ' ')}</div><h1>{selectedItem.title}</h1><p className="description">{selectedItem.description}</p>
-            <div className="lender"><div className="avatar">{selectedItem.owner.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}</div><div><small>LENT BY</small><strong>{selectedItem.owner.name}</strong><p>LoopScore {selectedItem.owner.creditScore}</p></div></div>
-            <div className="request-box"><div className="limit-note"><Icon name="loans"/><span>Borrowing requests will be available when the loan workflow is connected.</span></div>
-              <button className="btn-primary full" disabled>Request to borrow</button>
-            </div>
-          </div>
-        </div>
-      </div>}
+      {page === 'Discover' && selectedItem && <ItemDetailsPage itemId={selectedItem._id} onBack={() => setSelectedItem(null)} />}
+
+      {page === 'My listings' && (
+        <MyListingsPage
+          refreshToken={listingRefresh}
+          onCreate={() => go('Create listing')}
+        />
+      )}
+      {page === 'Create listing' && (
+        <ListingForm
+          onCancel={() => go('My listings')}
+          onSaved={() => {
+            setListingRefresh((value) => value + 1)
+            go('My listings')
+          }}
+        />
+      )}
 
       {page === 'My loans' && <div className="content"><PageTitle title="My loans" text="Track requests, active loans, and lending activity." />
         <div className="tabs"><button className="active">Borrowing <span>2</span></button><button>Lending <span>1</span></button></div>
