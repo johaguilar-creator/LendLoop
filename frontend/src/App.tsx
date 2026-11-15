@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { useCallback, useEffect } from 'react'
 import AuthScreen from './components/AuthScreen'
+import ChatPage from './components/ChatPage'
 import ItemBrowser from './components/ItemBrowser'
 import ItemDetailsPage from './components/ItemDetailsPage'
 import ListingForm from './components/ListingForm'
@@ -197,10 +198,7 @@ function Dashboard({
 
       {page === 'My loans' && <MyLoansPage user={user} onUserUpdated={onUserUpdated} />}
 
-      {page === 'Messages' && <div className="content"><PageTitle title="Messages" text="Keep borrowing details in one safe place."/><div className="messages">
-        <div className="threads"><div className="thread active"><div className="avatar">BM</div><div><strong>Bea Mendoza</strong><p>Sure! I can meet you...</p></div><time>10:34</time></div><div className="thread"><div className="avatar gray">MS</div><div><strong>Miguel Santos</strong><p>Thanks for returning it!</p></div></div></div>
-        <div className="conversation"><div className="chat-head"><div className="avatar">BM</div><div><strong>Bea Mendoza</strong><small>About Sony WH-1000XM4</small></div></div><div className="chat-body"><div className="bubble theirs">Hi Alyssa! The headphones are available tomorrow.</div><div className="bubble mine">Great, could we meet by the library at noon?</div><div className="bubble theirs">Sure! I can meet you at the library entrance.</div></div><div className="message-input"><input placeholder="Write a message..."/><button><Icon name="send"/></button></div></div>
-      </div></div>}
+      {page === 'Messages' && <ChatPage userId={user.id} />}
 
       {page === 'Notifications' && <div className="content narrow"><PageTitle title="Notifications" text="Updates about your loans and account."/>
         {['Your request was approved|Miguel approved “Scientific Calculator”.|12 min ago','Upcoming return date|Your calculator is due tomorrow at 5:00 PM.|1 hr ago','You earned 50 Loop Points|On-time returns build your score and unlock badges.|Yesterday'].map((n,i)=>{const a=n.split('|');return <div className={`notification ${i===0?'unread':''}`} key={n}><div className={`activity-icon ${i===1?'orange':''}`}><Icon name={i===1?'bell':'check'}/></div><div><strong>{a[0]}</strong><p>{a[1]}</p></div><time>{a[2]}</time></div>})}

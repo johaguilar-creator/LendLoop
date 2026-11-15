@@ -52,3 +52,29 @@ test('conversation reads require authentication', async () => {
     assert.equal(body.error.code, 'UNAUTHENTICATED')
   })
 })
+
+test('message sending and read-state updates require authentication', async () => {
+  await withServer(async (baseUrl) => {
+    const conversationId = '507f1f77bcf86cd799439011'
+    const endpoints = [
+      [`/api/conversations/${conversationId}/messages`, 'POST', { body: 'Hello' }],
+      [`/api/conversations/${conversationId}/read`, 'PATCH'],
+    ]
+
+    for (const [path, method, body] of endpoints) {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method,
+        ...(body
+          ? {
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(body),
+            }
+          : {}),
+      })
+      const responseBody = await response.json()
+
+      assert.equal(response.status, 401)
+      assert.equal(responseBody.error.code, 'UNAUTHENTICATED')
+    }
+  })
+})

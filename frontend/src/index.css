@@ -171,12 +171,19 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
 .borrow-request-form { display:grid;gap:9px; }.borrow-request-form label { margin:3px 0 0; }.borrow-request-form .field-hint { margin-top:-4px; }.borrow-request-form textarea { resize:vertical;min-height:72px; }.request-followup { margin-top:12px; }
 .messages { display:grid;grid-template-columns:280px 1fr;background:#fff;border:1px solid var(--color-line);border-radius:15px;overflow:hidden;min-height:520px; }
 .threads { border-right:1px solid var(--color-line);padding:12px; }
-.thread { display:flex;align-items:center;gap:9px;padding:12px;border-radius:10px; }
+.thread { width:100%;display:flex;align-items:center;gap:9px;padding:12px;border:0;border-radius:10px;background:transparent;text-align:left;font:inherit;cursor:pointer; }
 .thread.active { background:var(--color-mint); }
-.thread>div:nth-child(2) { flex:1;min-width:0; }
+.thread-info { flex:1;min-width:0;display:flex;flex-direction:column;gap:3px; }
 .thread strong { font-size:11px; }
-.thread p { color:var(--color-muted);font-size:9px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.thread-info>span { color:var(--color-muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .thread time { font-size:8px;color:var(--color-muted); }
+.conversation { min-width:0;min-height:520px; }.chat-body { min-height:300px;max-height:calc(100vh - 300px);overflow-y:auto; }
+.message-row { max-width:76%;display:flex;flex-direction:column;gap:3px; }.message-row.mine { align-self:flex-end;align-items:flex-end; }.message-row.theirs { align-self:flex-start;align-items:flex-start; }
+.message-sender { color:var(--color-muted);font-size:9px;font-weight:700; }.message-row time { color:#929e9a;font-size:8px; }
+.load-older { align-self:center;border:0;background:transparent;color:var(--color-green);font-size:10px;font-weight:700;padding:8px; }
+.chat-error { display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;border-radius:8px;background:#fff2f0;color:#a33b32;font-size:10px; }.chat-error button { border:0;background:transparent;color:var(--color-green);font-weight:700; }
+.chat-read-error { color:#a96a1e;font-size:9px;text-align:center; }.chat-empty { margin:auto;color:var(--color-muted);font-size:11px; }
+.chat-composer { flex-wrap:wrap; }.message-input.chat-composer button { width:auto;min-width:64px;padding:0 12px;font-size:10px; }.chat-send-error { width:100%;color:#a33b32;font-size:10px;padding:3px 8px; }
 .gray { background:#ecefed;color:#64706d; }
 .conversation { display:flex;flex-direction:column; }
 .chat-head { padding:16px 20px;border-bottom:1px solid var(--color-line);display:flex;gap:10px;align-items:center; }
@@ -255,7 +262,7 @@ label { display:block;font-size:10px;font-weight:700;margin:0 0 7px; }
   .detail-grid { grid-template-columns:1fr; }.detail-image { height:320px; }.detail-info h1 { font-size:30px; }
   .loan-card { align-items:flex-start;flex-wrap:wrap; }.loan-card>div:nth-child(2) { min-width:calc(100% - 110px); }.loan-date { margin-left:107px; }
   .request-card .loan-date { margin-left:0; }.request-actions { width:100%;justify-content:flex-end; }.loan-action { margin-left:106px; }
-  .messages { grid-template-columns:1fr; }.threads { display:none; }
+  .messages { grid-template-columns:1fr; }.threads { display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--color-line); }.thread { min-width:175px;width:auto; }.conversation { min-height:420px; }.chat-body { max-height:55vh; }
   .badge-row { grid-template-columns:1fr; }.bubble { max-width:82%; }
   .my-listing { grid-template-columns:80px minmax(0,1fr); }.my-listing>img,.my-listing-placeholder { width:80px;height:74px; }
   .my-listing-actions { grid-column:1/-1;justify-content:flex-start; }.listing-page-title { align-items:flex-start;flex-direction:column; }.listing-field-row { grid-template-columns:1fr; }
