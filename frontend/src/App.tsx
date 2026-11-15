@@ -1,4 +1,7 @@
 import { useState, type ReactNode } from 'react'
+import { useCallback, useEffect } from 'react'
+import AuthScreen from './components/AuthScreen'
+import { ApiError, api, type Student } from './lib/api'
 
 type Page = 'Home' | 'Discover' | 'My loans' | 'Messages' | 'Notifications' | 'Profile' | 'Reports'
 
@@ -49,6 +52,70 @@ function ItemCard({ item, onOpen }: { item: typeof items[number]; onOpen: () => 
 }
 
 export default function App() {
+  const [user, setUser] = useState<Student | null>(null)
+  const [loadingSession, setLoadingSession] = useState(true)
+  const [sessionError, setSessionError] = useState('')
+
+  const loadSession = useCallback(async () => {
+    setLoadingSession(true)
+    setSessionError('')
+    try {
+      const result = await api.get<{ user: Student }>('/auth/me')
+      setUser(result.user)
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        setUser(null)
+      } else {
+        setSessionError(
+          error instanceof Error
+            ? error.message
+            : 'Unable to connect to the LendLoop API.',
+        )
+      }
+    } finally {
+      setLoadingSession(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadSession()
+  }, [loadSession])
+
+  async function signOut() {
+    try {
+      await api.post('/auth/logout')
+      setUser(null)
+    } catch (error) {
+      setSessionError(
+        error instanceof Error ? error.message : 'Unable to sign out.',
+      )
+    }
+  }
+
+  if (loadingSession) {
+    return <main className="auth-loading" aria-live="polite">Checking your session…</main>
+  }
+  if (sessionError) {
+    return (
+      <main className="auth-loading">
+        <div className="form-error" role="alert">{sessionError}</div>
+        <button className="btn-primary" onClick={() => void loadSession()}>
+          Retry connection
+        </button>
+      </main>
+    )
+  }
+  if (!user) return <AuthScreen onAuthenticated={setUser} />
+  return <Dashboard user={user} onLogout={signOut} />
+}
+
+function Dashboard({
+  user,
+  onLogout,
+}: {
+  user: Student
+  onLogout: () => void
+}) {
   const [page, setPage] = useState<Page>('Home')
   const [detail, setDetail] = useState(false)
   const [requested, setRequested] = useState(false)
@@ -71,7 +138,7 @@ export default function App() {
         <button className={page === 'Reports' ? 'nav-item active' : 'nav-item'} onClick={() => go('Reports')}><Icon name="flag"/><span>Reports & OSA</span></button>
       </nav>
       <div className="sidebar-profile">
-        <div className="avatar">AS</div><div><strong>Alyssa Sy</strong><small>Verified student</small></div><span>•••</span>
+        <div className="avatar">{user.name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div><div><strong>{user.name}</strong><small>{user.email}</small></div><button className="sign-out" onClick={onLogout}>Sign out</button>
       </div>
     </aside>
 
@@ -87,7 +154,7 @@ export default function App() {
 
       {page === 'Home' && !detail && <div className="content">
         <section className="welcome">
-          <div><div className="kicker">ATENEO DE NAGA UNIVERSITY</div><h1>Good morning, Alyssa.</h1><p>What do you need today? Borrow from students you know and trust.</p></div>
+          <div><div className="kicker">ATENEO DE NAGA UNIVERSITY</div><h1>Good morning, {user.name.split(' ')[0]}.</h1><p>What do you need today? Borrow from students you know and trust.</p></div>
           <div className="trust-card"><div className="score-ring">86</div><div><span>Great standing</span><strong>Your LoopScore</strong><small>Top 15% of borrowers</small></div><Icon name="arrow"/></div>
         </section>
         <div className="search-box"><Icon name="search" size={22}/><input placeholder="Search cameras, calculators, books, and more..." /><Button onClick={() => go('Discover')}>Search</Button></div>
